@@ -16,22 +16,22 @@ format: html
 -   **Modul 1: Metode Beda Hingga untuk PDB Linear**
     <br> <i class="fa-solid fa-calendar-days" aria-hidden="true"></i> **Tanggal:** 18 Februari 2026
     <br> <i class="fa-solid fa-location-dot" aria-hidden="true"></i> **Lokasi:** Lab Komputer D.311 
-    <br> <i class="fa-solid fa-book" aria-hidden="true"></i> **Materi:** [Buka Modul 1](.prak1.qmd)
+    <br> <i class="fa-solid fa-book" aria-hidden="true"></i> **Materi:** [Buka Modul 1](./prak1.qmd)
 
 -   **Modul 2: Metode Beda Hingga untuk PDB Nonlinear dan Persamaan Transport**
     <br> <i class="fa-solid fa-calendar-days" aria-hidden="true"></i> **Tanggal:** **TBD**
     <br> <i class="fa-solid fa-location-dot" aria-hidden="true"></i> **Lokasi:** Lab Komputer D.311 
-    <br> <i class="fa-solid fa-book" aria-hidden="true"></i> **Materi:** [Buka Modul 2](.prak2.qmd)
+    <br> <i class="fa-solid fa-book" aria-hidden="true"></i> **Materi:** [Buka Modul 2](./prak2.qmd)
 
 -   **Modul 3: Metode Beda Hingga untuk Persamaan Gelombang Panas dan Persamaan Panas**
     <br> <i class="fa-solid fa-calendar-days" aria-hidden="true"></i> **Tanggal:** 29 April 2026
     <br> <i class="fa-solid fa-location-dot" aria-hidden="true"></i> **Lokasi:** Lab Komputer D.311 
-    <br> <i class="fa-solid fa-book" aria-hidden="true"></i> **Materi:** [Buka Modul 3](.prak3.qmd)
+    <br> <i class="fa-solid fa-book" aria-hidden="true"></i> **Materi:** [Buka Modul 3](./prak3.qmd)
 
 -   **Modul 4: Metode Beda Hingga untuk Persamaan Panas (lanjutan) dan Persamaan Laplace**
     <br> <i class="fa-solid fa-calendar-days" aria-hidden="true"></i> **Tanggal:** 20 Mei 2026
     <br> <i class="fa-solid fa-location-dot" aria-hidden="true"></i> **Lokasi:** Lab Komputer D.311 
-    <br> <i class="fa-solid fa-book" aria-hidden="true"></i> **Materi:** [Buka Modul 4](.prak4.qmd)
+    <br> <i class="fa-solid fa-book" aria-hidden="true"></i> **Materi:** [Buka Modul 4](./prak4.qmd)
 
 ## Latihan 
 

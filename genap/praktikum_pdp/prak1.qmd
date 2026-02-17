@@ -6,7 +6,7 @@ date: "18 Februari 2026"
 format: "html"
 ---
 
-Kembali ke [Praktikum Persamaan Diferensial Parsial](./pdp2025genap.qmd)
+Kembali ke [Praktikum Persamaan Diferensial Parsial](./prakpdp2026.qmd)
 
 **Catatan Modul**
 

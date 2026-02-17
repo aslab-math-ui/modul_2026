@@ -1,5 +1,7 @@
 # Latihan 1 Praktikum Persamaan Diferensial Parsial: Skema Beda Hingga untuk PDB Linear
 
+Kembali ke [Praktikum Persamaan Diferensial Parsial](./prakpdp2026.qmd)
+
 ## Soal 1
 
 Diberikan suatu masalah nilai atas (*boundary-value problem*):

@@ -1,0 +1,7 @@
+---
+title: "Modul 1 Praktikum Pesamaan Diferensial Parsial: Pengenalan Metode Beda Hingga (*Finite Difference*)"
+subtitle: "*Finite Difference* untuk PDB"
+author: "Tim Asisten Lab Matematika UI"
+date: "18 Februari 2025"
+format: "html"
+---

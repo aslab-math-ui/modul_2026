@@ -1,0 +1,153 @@
+---
+title: "Modul 2 Praktikum Pesamaan Diferensial Parsial: Beda Hingga pada Persamaan Nonlinear dan Persamaan Transport"
+subtitle: "*Finite Difference* untuk PDB Nonlinear dan Persamaan Transport"
+author: "Tim Asisten Lab Matematika UI"
+date: "11 Maret 2026"
+format: "html"
+---
+
+Pada modul ini akan dibahas tentang penggunaan Beda Hingga pada PDB Nonlinear dan Persamaan Transport.
+
+# Metode Beda Hingga untuk Persamaan Nonlinear
+
+## Sedikit Perhitungan
+
+Pada bagian sebelumnya, kita menggunakan metode beda hingga untuk mengaproksimasi suatu masalah nilai-batas. Sekarang untuk masalah nilai batas yang lebih umum yaitu dalam bentuk
+
+$$
+\begin{align*}
+    y'' = f(x, y, y''), \text{ untuk } a\leq x\leq b \text{ , dengan } y(a) = \alpha\, , y(b) = \beta,
+\end{align*}
+$$ 
+dengan $f$ merupakan suatu fungsi linear maupun linear. Asumsikan sepanjang pengerjaan numerik bahwa $f$ memenuhi kondisi yang diberikan pada buku bab 11.4. 
+
+Pada kasus ini, kita membutuhkan suatu proses yang iteratif untuk mengaproksimasi masalah tersebut. Metode iteratif ini memanfaatkan suatu metode Newton untuk sistem persamaan yang pada sebelumnya sudah pernah dibahas. Untuk itu kita hanya perlu membahas penerapan metode Newton untuk menyelesaikan masalah nilai batas.
+
+Langkah-langkah tersebut yaitu
+
+1.  Hitung rumus $f_y(x,y,y')$ (yaitu $\frac{\partial f}{\partial y}(x,y,y')$) dan rumus $f_{y'}(x,y,y')$ (yaitu $\frac{\partial f}{\partial y'}(x,y,y')$) secara analitik.
+
+2. Tentukan toleransi $\varepsilon$, dan/atau maksimum banyaknya iterasi $M$.
+
+3. Pastikan nilai $N$ dan *step size* $h$ sudah dimiliki. Biasanya hanya salah satu nilai yang diberikan (biasanya $N$). Hubungan antara keduanya adalah
+
+    $$h = \frac{b-a}{N+1}$$
+
+4. Ingat bahwa $w_0 = \alpha$ dan $w_{N+1} = \beta$. Kita perlu menentukan nilai-nilai $w_1, \dots, w_N$. Untuk nilai-nilai tersebut, pasang tebakan awal, berupa nilai-nilai di antara $\alpha$ dan $\beta$, sebagai berikut untuk $i = 1, \dots, N$:
+
+    $$w_i = \alpha + i\left(\frac{\beta - \alpha}{b-a}\right)h$$
+
+5. Susun suatu matriks tridiagonal berukuran $N \times N$ yang dinamakan matriks Jacobian, dengan entri
+    $$J_{ij} = \begin{cases}
+        -\left(1 + \frac{h}{2} f_{y'} \left(x_i, w_i, \frac{w_{i+1} - w_{i-1}}{2h}\right)\right) & \text{di bawah/kiri diagonal, baris ke-$i$} \\
+        2 + h^2 f_{y} \left(x_i, w_i, \frac{w_{i+1} - w_{i-1}}{2h}\right) & \text{di diagonal, baris ke-$i$} \\
+        -\left(1 - \frac{h}{2} f_{y'} \left(x_i, w_i, \frac{w_{i+1} - w_{i-1}}{2h}\right) \right) & \text{di atas/kanan diagonal, barsi ke-$i$} \\
+        0 & \text{untuk semua elemen lainnya}
+    \end{cases}$$
+
+6. Susun vektor kolom bernama $d$ dengan $N$ baris, yang isinya sebagai berikut untuk $i = 1, \dots, N$:
+    $$d_i = -w_{i-1} + 2w_i - w_{i+1} + h^2 f\left(x_i, w_i, \frac{w_{i+1}-w_{i-1}}{2h}\right)$$
+
+7. Selesaikan SPL $Jv = -d$ (iya pakai minus), di mana vektor $v$ berisi nilai-nilai $v_1,\dots,v_N$ yang ingin diperoleh. Metode penyelesaian SPLnya terserah.
+
+8. Perbarui vektor $w$ dengan menambahkan vektor $v$. Yaitu, nilai $w_1$ ditambahkan $v_1$, nilai $w_2$ ditambahkan $v_2$, dan seterusnya.
+
+9. Sampai sini, selesai satu iterasi. Periksa apakah $\left|\left|v\right|\right| \le \varepsilon$ (atau periksa apakah sudah memenuhi banyaknya iterasi yang diminta). Kalau sudah terpenuhi, metode selesai. Kalau belum, masuk ke iterasi selanjutnya, yaitu melanjutkan kembali dari langkah 5, dengan nilai-nilai $w_1, \dots, w_N$ terbaru.
+
+Mungkin di sini anda agak bingung kenapa langkah 7-9 terjadi? Hal itu karena sebenarnya kita ingin menyelesaikan iterasi dalam bentuk
+
+$$
+\mathbf{y}^{k} = \mathbf{y}^{k} - J^{-1}(\mathbf{y}^{k-1})d(\mathbf{y}^{k-1})
+$$ 
+dengan $\mathbf{y}$ adalah solusi aproksimasi kita, $J$ adalah Jacobian tridiagonal dan $d$ adalah vektor kolom dengan entry $d_i$.
+
+Alih-alih kita selesaikan secara manual dengan mencari invers $J$ dan substitusi berulang kali nilai $\mathbf{y}^{k+1}$, kita cari faktor koreksi (vektor kolom) $v$ sehingga
+$$
+J(\mathbf{y}^{k-1})v = -d(\mathbf{y}^{k-1})
+$$
+
+## Kode
+
+::: {.panel-tabset}
+### *Function file* `nonlinear_fd_langsung_on2.m` - nama *file* harus sama dengan nama fungsi
+
+```octave
+function [x_grid, w_grid] = nonlinear_fd_langsung_on2(f, fy, fyp, a, b, N, alph, bet, tol, M)
+  h = (b-a) / (N+1);
+  x_grid = (a : h : b)'; % transpos juga agar menjadi vektor kolom
+  x = x_grid(2 : N+1);
+  w = zeros(N, 1);
+  
+  for i = 1 : N
+    w(i) = alph + i * ((bet - alph)/(b-a)) * h;
+  endfor
+  
+  % banyaknya iterasi
+  k = 1;
+
+  err = tol + 1;
+  % selama belum memenuhi toleransi ataupun mencapai batas iterasi
+  while (!(err <= tol) && k != M+1)
+    % menyusun matriks Jacobian
+    matriks_J = zeros(N, N);
+    for i = 1 : N
+      for j = 1 : N
+        if (i == j+1) % kiri/bawah diagonal
+          if (i == 1) % w(0) = alfa
+            matriks_J(i, j) = -(1 + h/2 * fyp(x(i), w(i), (w(i+1) - alph)/(2*h)));
+          elseif (i == N) % w(N+1) = beta
+            matriks_J(i, j) = -(1 + h/2 * fyp(x(i), w(i), (bet - w(i-1))/(2*h)));
+          else
+            matriks_J(i, j) = -(1 + h/2 * fyp(x(i), w(i), (w(i+1) - w(i-1))/(2*h)));
+          endif
+        elseif (i == j) % pada diagonal
+          if (i == 1) % w(0) = alfa
+            matriks_J(i, j) = 2 + h^2 * fy(x(i), w(i), (w(i+1) - alph)/(2*h));
+          elseif (i == N) % w(N+1) = beta
+            matriks_J(i, j) = 2 + h^2 * fy(x(i), w(i), (bet - w(i-1))/(2*h));
+          else
+            matriks_J(i, j) = 2 + h^2 * fy(x(i), w(i), (w(i+1) - w(i-1))/(2*h));
+          endif
+        elseif (i == j-1) % kanan/atas diagonal
+          if (i == 1) % w(0) = alfa
+            matriks_J(i, j) = -(1 - h/2 * fyp(x(i), w(i), (w(i+1) - alph)/(2*h)));
+          elseif (i == N) % w(N+1) = beta
+            matriks_J(i, j) = -(1 - h/2 * fyp(x(i), w(i), (bet - w(i-1))/(2*h)));
+          else
+            matriks_J(i, j) = -(1 - h/2 * fyp(x(i), w(i), (w(i+1) - w(i-1))/(2*h)));
+          endif
+        else
+          matriks_J(i, j) = 0;
+        endif
+      endfor
+    endfor
+    
+    % menyusun vektor d
+    d = zeros(N, 1);
+    % khusus baris pertama
+    i = 1;
+    d(i) = -alph + 2 * w(i) - w(i+1) + h^2 * f(x(i), w(i), (w(i+1) - alph)/(2*h));
+    for i = 2 : (N-1)
+      d(i) = -w(i-1) + 2 * w(i) - w(i+1) + h^2 * f(x(i), w(i), (w(i+1) - w(i-1))/(2*h));
+    endfor
+    % khusus baris terakhir
+    i = N;
+    d(i) = -w(i-1) + 2 * w(i) - bet + h^2 * f(x(i), w(i), (bet - w(i-1))/(2*h));
+    
+    % selesaikan SPL
+    v = matriks_J \ (-d);
+    
+    % update w
+    w = w + v;
+
+    % hitung error dengan norm Euclid
+    err = sum(v.^2);
+
+    k += 1; % lanjut ke iterasi selanjutnya
+  endwhile
+
+  % gabungkan w_0 (alfa), dengan w_1, ..., w_N, dengan w_{N+1} (beta)
+  w_grid = [alph; w; bet];
+endfunction
+```
+:::

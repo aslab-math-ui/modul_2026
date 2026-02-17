@@ -1,0 +1,45 @@
+# Latihan 1 Praktikum Persamaan Diferensial Parsial: Skema Beda Hingga untuk PDB Linear
+
+## Soal 1
+
+Diberikan suatu masalah nilai atas (*boundary-value problem*):
+
+$$
+\begin{gathered}
+    y'' = 2y' - y = xe^x - x, \hspace{1 cm} 0\leq x\leq 2,\\
+    y(0) = 0, \hspace{1 cm} y(2) = -4
+\end{gathered}
+$$
+
+dan dengan solusi eksak
+$$
+\begin{gathered}
+    y(x) = \frac{1}{6}x^3e^x - \frac{5}{3}xe^x + 2e^x - x - 2.
+\end{gathered}
+$$
+
+Jika diberikan *stepsize* $h = 0.2$, maka ...
+
+Gunakan metode Beda Hingga PDB Linear untuk mengaproksimasi solusi dari masalah tersebut! Bandingkan hasil numerik dengan solusi eksaknya!
+
+## Soal 2
+
+Diberikan suatu masalah nilai atas (*boundary-value problem*):
+
+$$
+\begin{gathered}
+    y'' = y' + 2y + \cos x, \hspace{1 cm} 0 \leq x \leq \frac{\pi}{2},\\
+    y(0) = -0.3, \hspace{1 cm} y(\frac{\pi}{2}) = -0.1
+\end{gathered}
+$$
+
+dengan solusi eksak 
+$$
+\begin{align*}
+    y(x) = -\frac{1}{10}(\sin x + 3\cos x).
+\end{align*}
+$$
+
+Jika diberikan dua *stepsize* $h = \frac{\pi}{4}$ dan $h = \frac{\pi}{8}$ maka...
+
+Gunakan metode Beda Hingga PDB Linear untuk mengaproksimasi solusi dari masalah tersebut menggunakan dua *stepsize* yang berbeda! Bandingkanlah kedua *stepsize* dengan solusi eksaknya (dalam satu tabel di *command window*)!

@@ -1,0 +1,53 @@
+---
+title: "Praktikum PDP (Persamaan Diferensial Parsial)"
+subtitle: "Genap 2026 - Kurikulum 2024"
+toc: false
+format: html
+---
+
+<a href="../../../../semuahalaman/praktikum.qmd" class="btn btn-outline-primary mb-4">
+<i class="fa-solid fa-arrow-left"></i> Kembali ke Arsip Praktikum
+</a>
+
+::: {.panel-tabset}
+
+## Daftar Modul
+
+-   **Modul 1: Metode Beda Hingga untuk PDB Linear**
+    <br> <i class="fa-solid fa-calendar-days" aria-hidden="true"></i> **Tanggal:** 18 Februari 2026
+    <br> <i class="fa-solid fa-location-dot" aria-hidden="true"></i> **Lokasi:** Lab Komputer D.311 
+    <br> <i class="fa-solid fa-book" aria-hidden="true"></i> **Materi:** [Buka Modul 1](.prak1.qmd)
+
+-   **Modul 2: Metode Beda Hingga untuk PDB Nonlinear dan Persamaan Transport**
+    <br> <i class="fa-solid fa-calendar-days" aria-hidden="true"></i> **Tanggal:** **TBD**
+    <br> <i class="fa-solid fa-location-dot" aria-hidden="true"></i> **Lokasi:** Lab Komputer D.311 
+    <br> <i class="fa-solid fa-book" aria-hidden="true"></i> **Materi:** [Buka Modul 2](.prak2.qmd)
+
+-   **Modul 3: Metode Beda Hingga untuk Persamaan Gelombang Panas dan Persamaan Panas**
+    <br> <i class="fa-solid fa-calendar-days" aria-hidden="true"></i> **Tanggal:** 29 April 2026
+    <br> <i class="fa-solid fa-location-dot" aria-hidden="true"></i> **Lokasi:** Lab Komputer D.311 
+    <br> <i class="fa-solid fa-book" aria-hidden="true"></i> **Materi:** [Buka Modul 3](.prak3.qmd)
+
+-   **Modul 4: Metode Beda Hingga untuk Persamaan Panas (lanjutan) dan Persamaan Laplace**
+    <br> <i class="fa-solid fa-calendar-days" aria-hidden="true"></i> **Tanggal:** 20 Mei 2026
+    <br> <i class="fa-solid fa-location-dot" aria-hidden="true"></i> **Lokasi:** Lab Komputer D.311 
+    <br> <i class="fa-solid fa-book" aria-hidden="true"></i> **Materi:** [Buka Modul 4](.prak4.qmd)
+
+## Latihan 
+
+-   **Latihan 1**
+    <br> <i class="fa-solid fa-location-dot" aria-hidden="true"></i> **Lokasi:** Lab Komputer D.311 
+    <br> <i class="fa-solid fa-book" aria-hidden="true"></i> **Materi:** [Buka Latihan 1](./latihan1.qmd)
+
+-   **Latihan 2**
+    <br> <i class="fa-solid fa-location-dot" aria-hidden="true"></i> **Lokasi:** **TBD**
+    <br> <i class="fa-solid fa-book" aria-hidden="true"></i> **Materi:** [Buka Latihan 2](./latihan2.qmd)
+
+-   **Latihan 3**
+    <br> <i class="fa-solid fa-location-dot" aria-hidden="true"></i> **Lokasi:** Lab Komputer D.311 
+    <br> <i class="fa-solid fa-book" aria-hidden="true"></i> **Materi:** [Buka Latihan 2](./latihan3.qmd)
+
+-   **Latihan 4**
+    <br> <i class="fa-solid fa-location-dot" aria-hidden="true"></i> **Lokasi:** Lab Komputer D.311 
+    <br> <i class="fa-solid fa-book" aria-hidden="true"></i> **Materi:** [Buka Latihan 2](./latihan4.qmd)
+:::

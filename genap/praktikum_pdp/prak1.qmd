@@ -1,0 +1,284 @@
+---
+title: "Modul 1 Praktikum Pesamaan Diferensial Parsial: Pengenalan Metode Beda Hingga"
+subtitle: "*Finite Difference* untuk Persamaan Nonlinear"
+author: "Tim Asisten Lab Matematika UI"
+date: "18 Februari 2026"
+format: "html"
+---
+
+Kembali ke [Praktikum Persamaan Diferensial Parsial](./pdp2025genap.qmd)
+
+**Catatan Modul**
+
+Pada Kurikulum Prodi Matematika 2020 Praktikum Persamaan Diferensial Parsial pada dasarnya adalah bagian lanjutan Praktikum Persamaan Diferensial Biasa dari Mata Kuliah Persamaan Diferensial Numerik. Modul untuk praktikum tersebut dapat dibuka pada link berikut [Modul Praktikum Persamaan Diferensial Numerik](../../../2024/genap/persamaan_diferensial_numerik/pdnum2024genap.qmd)
+
+Software lain untuk membantu komputasi pada masalah-masalah persamaan diferensial dapat dapat menggunakan Matlab (matcont, pdepe, pde2path), Python (Pycont, SciPy, Numba), Julia (DifferentialEquations, ModelingToolkit, Gridap). Silahkan mahasiswa eksplor tergantung pada kebutuhannya masing-masing.
+
+# Metode Beda Hingga untuk Masalah Linear
+
+Metode yang berkaitan dengan beda hingga untuk menyelesaikan masalah nilai-batas pada dasarnya adalah mengganti setiap suku turunan pada persamaan diferensial dengan aproksimasi turunan pembagi (*difference-quotient*) dari yang pernah dibahas sebelumnya. Turunan pembagi ini dan *step size* $h$ dipilih secara spesifik terhadap derajat *truncation error*. 
+
+Misalkan diberikan suatu masalah nilai-batas PDB 
+
+$$
+\begin{align*}
+    y'' = p(x)y' + q(x)y + r(x), \text{ untuk } a\leq x\leq b \text{ , dengan } y(a) = \alpha\, , y(b) = \beta.
+\end{align*}
+$$
+
+Dengan mengubah semua bentuk turunan ke dalam bentuk aproksimasi numeriknya, persamaan tersebut menjadi
+
+$$
+\begin{align*}
+\frac{y(x_{i+1}) - 2 y(x_i) + y(x_{i-1})}{h^2} = &p(x_i)\left[ \frac{ y(x_{i+1}) - y(x_{i-1}) }{2h} \right] + q(x_i)y(x_i) + r(x_i) \\
+& + O\left(\|h\|^2\right)
+\end{align*}
+$$
+
+Dengan mengelompokkan mengubah variabel $y(x_j) \rightarrow w_j$ dan mengabaikan suku orde tinggi, sistem tersebut menjadi
+$$
+\begin{align*}
+    \left( \frac{ w_{i+1} - 2w_i + w_{i-1} }{ h^2 } \right) = p(x_i)\left[ \frac{ w_{i+1} - w_{i-1} }{ 2h } \right] + q(x_i)w_i + r(x_i)
+\end{align*}
+$$
+
+Dengan manipulasi aljabar sederhana diperoleh rumus umum untuk beda hingga untuk masalah nilai-batas PDB tersebut adalah
+
+$$
+\begin{gathered}
+    -\left( 1 + \frac{h}{2}p(x_i) \right)w_{i-1} + \left( 2 + h^2q(x_i) \right)w_i - \left( 1 - \frac{h}{2}p(x_i) \right)w_{i+1} = -h^2r(x_i)\\
+    w_0 = \alpha, \hspace{1 cm} w_{N+1} = \beta.
+\end{gathered}
+$$
+
+Perhatikan indeks dari persamaan $w$ tersebut, bahwa ini merupakan masalah SPL dengan bentuk
+
+$$
+\begin{cases} 
+\left( 2 + h^2q(x_1) \right)w_1 + \left( -1 + \frac{h}{2}p(x_1) \right)w_2 &= -h^2r(x_1) + \left(1 + \frac{h}{2}p(x_1)\right)w_0 \\
+\left( -1 - \frac{h}{2}p(x_2) \right)w_1 + \left( 2 + h^2q(x_2) \right)w_2 + \left( -1 + \frac{h}{2}p(x_2) \right)w_3 &= -h^2r(x_2) \\
+&\vdots \\
+\left( -1 - \frac{h}{2}p(x_i) \right)w_{i-1} + \left( 2 + h^2q(x_i) \right)w_i + \left( -1 + \frac{h}{2}p(x_i) \right)w_{i+1} &= -h^2r(x_i) \\
+&\vdots \\
+\left( -1 - \frac{h}{2}p(x_N) \right)w_{N-1} + \left( 2 + h^2q(x_N) \right)w_N &= -h^2r(x_N) + \left(1 - \frac{h}{2}p(x_N)\right)w_{N+1}
+\end{cases}
+$$
+
+yang dapat ditulis dalam bentuk matriks $A\mathbf{w} = \mathbf{b}$:
+
+$$
+A = \begin{bmatrix}
+2 + h^2q(x_1) & -1 + \frac{h}{2}p(x_1) & 0 & \cdots & 0 \\
+-1 - \frac{h}{2}p(x_2) & 2 + h^2q(x_2) & -1 + \frac{h}{2}p(x_2) & \ddots & \vdots \\
+0 & \ddots & \ddots & \ddots & 0 \\
+\vdots & \ddots & -1 - \frac{h}{2}p(x_{N-1}) & 2 + h^2q(x_{N-1}) & -1 + \frac{h}{2}p(x_{N-1}) \\
+0 & \cdots & 0 & -1 - \frac{h}{2}p(x_N) & 2 + h^2q(x_N)
+\end{bmatrix} 
+$$ 
+
+$$
+\mathbf{w} \begin{bmatrix}
+w_1 \\
+w_2 \\
+\vdots \\
+w_{N-1} \\
+w_N
+\end{bmatrix},\, \mathbf{b} = \begin{bmatrix}
+-h^2r(x_1) + \left(1 + \frac{h}{2}p(x_1)\right)w_0 \\
+-h^2r(x_2) \\
+\vdots \\
+-h^2r(x_{N-1}) \\
+-h^2r(x_N) + \left(1 - \frac{h}{2}p(x_N)\right)w_{N+1}
+\end{bmatrix}
+$$
+
+# Kode Algoritma
+
+Berdasarkan catatan dari buku, SPL tersebut sebaiknya diselesaikan dengan metode faktorisasi Crout (algoritma 6.7) sehingga runtime *runtime* dari algoritma menjadi $O(n)$. Walaupun begitu, untuk sistem dengan diskritisasi yang tidak terlalu besar, kita bebas untuk bereksperimen dengan menggunakan metode apapun yang diinginkan.
+
+::: {.panel-tabset}
+### *Function file* `linfdm_pseudocode.m` - nama *file* harus sama dengan nama fungsi
+
+```octave
+function [xt, w] = linfdm_pseudocode(p, q, r, left_bound, right_bound, alpha_, beta_, n)
+
+  % setup stepsize
+  h = (right_bound - left_bound) / (n+1);
+
+  % vektor kolom untuk matriks SPL
+  a = zeros(n, 1); %| diagonal utama
+  b = zeros(n, 1); %| diagonal atas
+  c = zeros(n, 1); %| diagonal bawah
+
+  % vektor kolom untuk ruas kanan SPL
+  d = zeros(n, 1);
+
+  % vektor kolom untuk algoritma Crout
+  l = zeros(n, 1);
+  u = zeros(n, 1);
+  z = zeros(n, 1);
+
+  % vektor solusi akhir PDB
+  w = zeros(n+1, 1);
+
+  % vektor posisi (diskritisasi domain x)
+  xt = [left_bound : h : right_bound];
+  x = left_bound+h;
+
+  % konstruksi matriks tridiagonal
+  a(1) = 2 + (h^2) * q(x);
+  b(1) = -1 + (h/2) * p(x);
+  d(1) = -h^2 * r(x) + (1 + (h/2) * p(x)) * alpha_;
+
+  % setup kolom SPL dan RHS
+  for i = 2 : n-1
+    x = left_bound + i*h;
+    a(i) = 2 + h^2 * q(x);
+    b(i) = -1 + (h/2) * p(x);
+    c(i) = -1 - (h/2) * p(x);
+    d(i) = -h^2 * r(x);
+  endfor
+
+  x = right_bound - h;
+  a(n) = 2 + h^2 * q(x);
+  c(n) = -1 - (h/2) * p(x);
+  d(n) = -h^2 * r(x) + (1 - (h/2) * p(x)) * beta_;
+
+  % setup algoritma Crout
+  l(1) = a(1);
+  u(1) = b(1) / a(1);
+  z(1) = d(1) / l(1);
+
+  for i = 2 : n-1
+    l(i) = a(i) - c(i) * u(i-1);
+    u(i) = b(i) / l(i);
+    z(i) = (d(i) - c(i) * z(i-1)) / l(i);
+  endfor
+
+  l(n) = a(n) - c(n) * u(n-1);
+  z(n) = (d(n) - c(n) * z(n-1)) / l(n);
+
+  %konstruksi akhir w-nya
+  w(n+1) = beta_;
+  w(n) = z(n);
+  for i = n-1 : -1 : 1
+    w(i) = z(i) - u(i) * w(i+1);
+  endfor
+
+  % hasil akhir
+  w = [alpha_ ; w];
+  xt = transpose(xt);
+
+endfunction
+```
+:::
+
+::: {.panel-tabset}
+### *Function file* `linear_fd_langsung.m` - nama *file* harus sama dengan nama fungsi
+
+```octave
+function [x, w_grid] = linear_fd_langsung(p, q, r, left_bound, right_bound, alph, bet, N)
+  % buat array x
+  h = (right_bound - left_bound) / (N+1);
+  x = (left_bound : h : right_bound)'; % transpos juga agar menjadi vektor kolom
+
+  % susun matriks A dan vektor b
+  A = zeros(N, N);
+  b = -h^2 * r(x(2:N+1));
+
+  % kasus khusus untuk baris pertama
+  b(1)    += (1 + h/2 * p(x(2))) * alph;
+  A(1, 1) += 2 + h^2 * q(x(2));
+  A(1, 2) += -1 + h/2 * p(x(2));
+
+  % kasus khusus untuk baris terakhir
+  A(N, N-1) += -1 - h/2 * p(x(N+1));
+  A(N, N)   +=  2 + h^2 * q(x(N+1));
+  b(N)      += (1 - h/2 * p(x(N+1))) * bet;
+
+  % untuk baris kedua hingga kedua-terakhir
+  for i = 2 : (N-1)
+    A(i, i-1) += -1 - h/2 * p(x(i+1));
+    A(i, i)   +=  2 + h^2 * q(x(i+1));
+    A(i, i+1) += -1 + h/2 * p(x(i+1));
+  endfor
+
+  % selesaikan SPL
+  w = A \ b;
+  % w baru mengandung w1, ..., w_N
+
+  % gabungkan dengan w0 (alpha) dan w_{N+1} (beta)
+  w_grid = [alph w' bet]'; % transpos juga agar menjadi vektor kolom
+endfunction
+```
+:::
+
+# Contoh Penggunaan
+
+Sebagai contoh, perhatikan masalah nilai batas berikut ini
+
+$$
+\begin{gathered}
+    y'' = -\frac{4}{x}y' - \frac{2}{x^2}y = \frac{2 \ln x}{x^2}, \hspace{1 cm} 1\leq x\leq 2\\
+    y(1) = \frac{1}{2}, \hspace{1 cm} y(2) = \ln 2.
+\end{gathered}
+$$
+
+Diberikan solusi eksak
+$$
+\begin{gathered}
+    y(x) = \frac{4}{x} - \frac{2}{x^2} + \ln x -\frac{3}{2}
+\end{gathered}
+$$
+
+
+::: {.panel-tabset}
+### *Script file* `coba_bedaHingga.m` - nama *file* bebas
+
+```octave
+% fungsi p(x)
+p = @(x) (-4./x);
+
+% fungsi q(x)
+q = @(x) (-2./x.^2);
+
+% fungsi r(x)
+r = @(x) 2*log(x)./(x.^2);
+
+% batas kiri-kanan interval
+a = 1; b = 2;
+
+% banyaknya partisi
+N = 20;
+
+% y(a) = alpha, y(b) = beta
+alph = 0.5; bet = log(2);
+
+% memanggil fungsi solver
+[x_grid, w_grid] = linear_fd_langsung(p, q, r, a, b, alph, bet, N);
+
+% solusi eksak y(x) dan error
+sln = @(x) 4./x - 2./(x.^2) + log(x) - 1.5;
+y_eksak = sln(x_grid);
+err = abs(y_eksak - w_grid);
+
+% norm L1 (taxicab/Manhattan)
+err_total = sum(err);
+
+% buat tabel dan grafiknya
+
+format long;
+disp("Tabel aproksimasi, solusi eksak y(x), dan error:");
+[x_grid, w_grid, y_eksak, err]
+disp("Error total (norm L1):");
+disp(err_total);
+format;
+
+hold on;
+fplot(sln, [a,b], 'b');
+scatter(x_grid, w_grid, 'r');
+title("Aproksimasi y(x)");
+legend("Eksak", "Aproksimasi");
+legend('location', 'northwest');
+```
+:::

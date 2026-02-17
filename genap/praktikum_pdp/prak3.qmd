@@ -1,0 +1,162 @@
+---
+title: "Modul 3 Praktikum Pesamaan Diferensial Parsial: Skema Beda Hingga untuk Persamaan Gelombang dan Panas"
+subtitle: "Persamaan Gelombang dan Persamaan Difusi (Panas)"
+author: "Tim Asisten Lab Matematika UI"
+date: "29 April 2026"
+format: "html"
+---
+
+Kembali ke [Praktikum Persamaan Diferensial Parsial](./pdp2025genap.qmd)
+
+# Skema Diskritisasi
+
+Bentuk umum PDP Parabolik (lebih tepatnya persamaan panas atau persamaan difusi) bisa ditulis sebagai berikut
+
+$$
+\begin{align*}
+    \frac{\partial u}{\partial t}(x, t) = \alpha^2\frac{\partial^2 u}{\partial x^2}(x,t),\\
+    0 < x < l, \hspace{1 cm} t > 0,
+\end{align*}
+$$
+
+dengan syarat batas serta nilai awal 
+$$
+\begin{gathered}
+    u(0, t) = u(l, t) = 0, \hspace{1 cm} t > 0,\\
+    u(x, 0) = f(x), \hspace{1 cm} 0 < x < l.
+\end{gathered}
+$$
+
+Untuk itu, kita dapat menetapkan masing-masing *stepsize* untuk waktu dan spasial
+
+- *Stepsize* dalam variabel $x$ dapat ditulis $h = \Delta x = l/m$ untuk suatu bilangan bulat positif $m$.
+
+- *Stepsize* dalam variabel $t$ dapat ditulis $k = \Delta t = T/N$ untuk suatu bilangan bulat positif $N$ dan waktu akhir $T$.
+
+Oleh karena itu, jika dirangkum, kita dapat menuliskan bentuk umum persamaan panas sebagai berikut
+
+$$
+\begin{gathered}
+    \frac{\partial u}{\partial t}(x, t) = \alpha^2\frac{\partial^2 u}{\partial x^2}(x,t), \hspace{1 cm} \text{xb} < x < \text{xu}, \hspace{1 cm} \text{tb} < t < \text{tu}\\
+    u(0, t) = lb(t) = 0, \hspace{1 cm} \text{tb} < t < \text{tu}\\
+    u(l, t) = rb(t) = 0, \hspace{1 cm} \text{tb} < t < \text{tu},\\
+    u(x, 0) = f(x), \hspace{1 cm} \text{xb} < x < \text{xu}
+\end{gathered}
+$$
+
+
+# Metode *Forward DIfference* (FTCS)
+
+## Ide Utama
+
+Metode *forward difference* didasari oleh perumusan *finite difference* berikut,
+
+$$
+\frac{\partial u}{\partial t}(x_i, t_j) = \frac{u(x_i, t_j + k) - u(x_i, t_j)}{k} + h.o.t.,
+$$
+
+dan 
+
+$$
+\frac{\partial^2 u}{\partial x^2}(x_i, t_j) = \frac{u(x_i + h, t_j) - 2u(x_i, t_j) + u(x_i - h, t_j)}{h^2} + h.o.t.
+$$
+
+Subsitutsi masing-masing suku tersebut ke persamaan difusi, diperoleh
+
+$$
+\frac{w_{i,j+1} - w_{i,j}}{k} = \alpha^2 \frac{w_{i+1,j} - 2w_{i,j} + w_{i-1,j}}{h^2} ,
+$$
+
+dengan $w_{ij} \sim u(x_i, t_j)$. Selesaikan persamaan untuk $w_{i, j+1}$ diperoleh persamaan
+
+$$
+w_{i, j+1} = \left( 1 - \frac{2\alpha^2k}{h^2}\right)w_{ij} + \alpha^2\frac{k}{h^2}(w_{i+1, j} + w_{i-1, j})
+$$
+
+Maka dari itu, untuk setiap $i = 1, 2, \ldots, m - 1$ dan $j = 1, 2, \ldots$ diperoleh 
+
+$$
+w_{0,0} = f(x_0), \quad w_{1,0} = f(x_1), \quad \ldots \quad w_{m,0} = f(x_m).
+$$
+
+dengan $t$ berikutnya diperoleh dari 
+
+$$
+\begin{aligned}
+w_{0,1} &= u(0, t_1) = 0; \\
+w_{1,1} &= \left( 1 - \frac{2\alpha^2 k}{h^2} \right) w_{1,0} + \alpha^2 \frac{k}{h^2} (w_{2,0} + w_{0,0}); \\
+w_{2,1} &= \left( 1 - \frac{2\alpha^2 k}{h^2} \right) w_{2,0} + \alpha^2 \frac{k}{h^2} (w_{3,0} + w_{1,0}); \\
+&\vdots \\
+w_{m-1,1} &= \left( 1 - \frac{2\alpha^2 k}{h^2} \right) w_{m-1,0} + \alpha^2 \frac{k}{h^2} (w_{m,0} + w_{m-2,0}); \\
+w_{m,1} &= u(m, t_1) = 0.
+\end{aligned}
+$$
+
+Sifat eksplisit dari metode beda ini mengimplikasikan bahwa matriks berukuran $(m - 1) \times (m - 1)$ yang terkait dengan sistem ini dapat ditulis dalam bentuk tridiagonal
+
+$$
+A =
+\begin{bmatrix}
+(1 - 2\lambda) & \lambda & 0 & \cdots & \cdots & 0 \\
+\lambda & (1 - 2\lambda) & \lambda & \ddots & & \vdots \\
+0 & \ddots & \ddots & \ddots & \ddots & \vdots \\
+\vdots & \ddots & \ddots & \ddots & \ddots & 0 \\
+\vdots & & \ddots & \lambda & (1 - 2\lambda) & \lambda \\
+0 & \cdots & \cdots & 0 & \lambda & (1 - 2\lambda)
+\end{bmatrix},
+$$
+
+dengan $\lambda = \alpha^2 (k/h^2)$. Jika kita memisalkan
+
+$$
+\mathbf{w}^{(0)} = (f(x_1), f(x_2), \ldots, f(x_{m-1}))^t
+$$
+
+dan
+
+$$
+\mathbf{w}^{(j)} = (w_{1j}, w_{2j}, \ldots, w_{m-1,j})^t, \quad \text{untuk setiap } j = 1, 2, \ldots,
+$$
+
+maka solusi hampirannya diberikan oleh
+
+$$
+\mathbf{w}^{(j)} = A\mathbf{w}^{(j-1)}, \quad \text{untuk setiap } j = 1, 2, \ldots,
+$$
+
+## Kode Algoritma
+
+::: {.panel-tabset}
+### *function file* `parabolik_forward_fd.m` - nama *file* harus sama dengan nama fungsi
+
+```octave
+function [x, t, w] = parabolik_forward_fd(alph2, f, lb, rb, xb, xu, tb, tu, h, k)
+  x = xb : h : xu;
+  t = tb : k : tu;
+  m_plus_1 = length(x);
+  N_plus_1 = length(t);
+  w = zeros(m_plus_1, N_plus_1);
+
+  lambd = (alph2 * k) / h^2;
+
+  % memasang nilai awal
+  for i = 1 : m_plus_1
+    w(i, 1) = f(x(i));
+  endfor
+
+  % memasang syarat batas
+  for j = 2 : N_plus_1
+    w(1, j)         = lb(t(j));
+    w(m_plus_1, j)  = rb(t(j));
+  endfor
+
+  % menggunakan perumusan finite difference untuk mengisi sisanya
+  for j = 1 : (N_plus_1 - 1)
+    for i = 2 : (m_plus_1 - 1)
+      w(i, j+1) = (1 - 2 * lambd) * w(i, j) + lambd * (w(i+1, j) + w(i-1, j));
+    endfor
+  endfor
+endfunction
+```
+
+:::

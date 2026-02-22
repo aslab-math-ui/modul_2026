@@ -8,7 +8,7 @@ Diberikan suatu masalah nilai atas (*boundary-value problem*):
 
 $$
 \begin{gathered}
-    y'' = 2y' - y = xe^x - x, \hspace{1 cm} 0\leq x\leq 2,\\
+    y'' = 2y' - y + xe^x - x, \hspace{1 cm} 0\leq x\leq 2,\\
     y(0) = 0, \hspace{1 cm} y(2) = -4
 \end{gathered}
 $$
@@ -45,3 +45,15 @@ $$
 Jika diberikan dua *stepsize* $h = \frac{\pi}{4}$ dan $h = \frac{\pi}{8}$ maka...
 
 Gunakan metode Beda Hingga PDB Linear untuk mengaproksimasi solusi dari masalah tersebut menggunakan dua *stepsize* yang berbeda! Bandingkanlah kedua *stepsize* dengan solusi eksaknya (dalam satu tabel di *command window*)!
+
+
+## Catatan Tambahan
+
+Bagi yang belum mengumpulkan per tanggal 22 Februari 2026, harap mengumpulkan semua file dalam format zip dengan penamaan
+
+**Nama Lengkap_NPM_latihan(i)_Kelas**
+
+Contoh:
+
+- **Muhammad Fasya Syaifullah_2206025496_latihan1.zip**
+- **Muhammad Fasya Syaifullah_2206025496_latihan1_revisi.zip**

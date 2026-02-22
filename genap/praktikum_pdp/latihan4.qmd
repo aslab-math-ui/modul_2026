@@ -1,0 +1,5 @@
+# Latihan 4 Praktikum Persamaan Diferensial Parsial: Skema Beda Hingga untuk PDB Linear
+
+Kembali ke [Praktikum Persamaan Diferensial Parsial](./prakpdp2026.qmd)
+
+**Latihan praktikum belum ada**

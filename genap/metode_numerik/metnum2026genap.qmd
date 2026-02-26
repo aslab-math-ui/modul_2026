@@ -1,5 +1,5 @@
 ---
-title: "Praktikum Metnum (Model Numerik) 2026 Genap (Kurikulum 2024)"
+title: "Praktikum Metnum (Metode Numerik) 2026 Genap (Kurikulum 2024)"
 format: html
 page-navigation: true
 

@@ -2,7 +2,7 @@
 title: "(Pertemuan 1) Review R dan Regresi Linear Sederhana"
 subtitle: "R Review and Simple Linear Regression"
 author: "Tim Asisten Lab Departemen Matematika UI"
-image: "image-modul1.png"
+image: "image1.jpg"
 format: html
 editor: visual
 date: 2026-02-28

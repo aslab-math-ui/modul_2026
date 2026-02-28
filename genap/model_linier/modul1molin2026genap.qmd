@@ -5,7 +5,7 @@ author: "Tim Asisten Lab Departemen Matematika UI"
 image: "image-modul1.png"
 format: html
 editor: visual
-date: 2026-03-02
+date: 2026-02-28
 ---
 
 Kembali ke [**Model Linier**](https://aslab-math-ui.github.io/modul-prak/modul/2026/genap/model_linier/molin2026genap.html)

@@ -2,6 +2,7 @@
 title: "(Pertemuan 1) Review R dan Regresi Linear Sederhana"
 subtitle: "R Review and Simple Linear Regression"
 author: "Tim Asisten Lab Departemen Matematika UI"
+image: "image-modul1.png"
 format: html
 editor: visual
 date: 2026-03-02
@@ -20,13 +21,13 @@ Sebelum masuk ke materi, mari kita review kembali mengenai R dan RStudio. Pastik
 
 Salah satu alasan kenapa R sangat bermanfaat dan sering dipakai untuk melakukan analisis data adalah karena kemudahan pengguna dalam menginstall package/library. R memiliki repository besar yang bernama CRAN (Comprehensive R Archive Network) yang menyimpan sangat banyak library yang dapat digunakan untuk mengaplikasikan metode-metode statistika, dimulai dari yang paling sederhana sampai yang paling kompleks. Dan untuk menginstall library di dalam CRAN ini, cukup menggunakan fungsi
 
-```r
+``` r
 install.packages()
 ```
 
 untuk melakukan pengunduhan, diikuti dengan
 
-```r
+``` r
 library()
 ```
 
@@ -34,7 +35,7 @@ untuk load library yang diinginkan. Setelah itu, fungsi-fungsi yang terdapat pad
 
 Untuk permulaan, silakan unduh terlebih dahulu package `tidyverse`, karena package ini memiliki banyak library-library penting yang diperlukan ke depannya.
 
-```r
+``` r
 install.packages("tidyverse")
 ```
 
@@ -49,7 +50,7 @@ library(readxl)
 
 Berikutnya, untuk membuka file, silakan run
 
-```r
+``` r
 data1 <- read_csv("path/menuju/ke/file.csv")     # untuk csv
 data2 <- read_excel("path/menuju/ke/file.xlsx")  # untuk xlsx
 ```
@@ -63,7 +64,7 @@ df <- iris
 
 Untuk melihat keseluruhan data:
 
-```r
+``` r
 View(df)
 ```
 
@@ -82,7 +83,7 @@ summary(df)
 
 dan untuk melihat statistik-statistik deskriptif, gunakan library `psych`:
 
-```r
+``` r
 install.packages("psych")
 ```
 
@@ -146,8 +147,7 @@ Untuk menghitung koefisien variasi, ingat rumus
 
 $$
 CV = 100\cdot\frac{s}{\bar{y}}
-$$
-dimana $\bar{y}$ adalah mean dari variabel respon. Untuk regresi yang kita miliki, koefisien variasinya dapat dihitung dengan
+$$ dimana $\bar{y}$ adalah mean dari variabel respon. Untuk regresi yang kita miliki, koefisien variasinya dapat dihitung dengan
 
 ```{r}
 s <- sigma(model)
@@ -162,8 +162,7 @@ Selanjutnya, interval kepercayaan untuk mean dari variabel dependen $Y$ untuk su
 
 $$
 \hat{y} \pm t_{\alpha/2}s\sqrt{\frac{1}{n}+\frac{(x-\bar{x})^2}{\sum_{i=1}^{n}(x_i-\bar{x})^2}}
-$$
-Untuk menghitung ini dengan R, misal secara khusus untuk observasi $X = 2$ dengan signifikansi $\alpha = 0.05$, boleh dihitung secara manual sebagai berikut:
+$$ Untuk menghitung ini dengan R, misal secara khusus untuk observasi $X = 2$ dengan signifikansi $\alpha = 0.05$, boleh dihitung secara manual sebagai berikut:
 
 ```{r}
 x <- 2
@@ -177,9 +176,11 @@ SSxx <- sum((df$Petal.Width - xbar)^2)
 upper_bound <- yhat + t*s*sqrt(1/n + (x-xbar)^2/SSxx)
 lower_bound <- yhat - t*s*sqrt(1/n + (x-xbar)^2/SSxx)
 ```
+
 ```{r}
 lower_bound
 ```
+
 ```{r}
 upper_bound
 ```
@@ -198,8 +199,7 @@ Jika sebelumnya merupakan interval kepercayaan untuk mean, selanjutnya interval 
 
 $$
 \hat{y} \pm t_{\alpha/2}s\sqrt{1+\frac{1}{n}+\frac{(x-\bar{x})^2}{\sum_{i=1}^{n}(x_i-\bar{x})^2}}
-$$
-Secara manual pada R:
+$$ Secara manual pada R:
 
 ```{r}
 x <- 2
@@ -213,9 +213,11 @@ SSxx <- sum((df$Petal.Width - xbar)^2)
 upper_bound <- yhat + t*s*sqrt(1+1/n + (x-xbar)^2/SSxx)
 lower_bound <- yhat - t*s*sqrt(1+1/n + (x-xbar)^2/SSxx)
 ```
+
 ```{r}
 lower_bound
 ```
+
 ```{r}
 upper_bound
 ```
@@ -251,4 +253,3 @@ abline(
   lwd = 1
 )
 ```
-

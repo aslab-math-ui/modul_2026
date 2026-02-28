@@ -147,7 +147,9 @@ Untuk menghitung koefisien variasi, ingat rumus
 
 $$
 CV = 100\cdot\frac{s}{\bar{y}}
-$$ dimana $\bar{y}$ adalah mean dari variabel respon. Untuk regresi yang kita miliki, koefisien variasinya dapat dihitung dengan
+$$
+
+dimana $\bar{y}$ adalah mean dari variabel respon. Untuk regresi yang kita miliki, koefisien variasinya dapat dihitung dengan
 
 ```{r}
 s <- sigma(model)
@@ -162,7 +164,9 @@ Selanjutnya, interval kepercayaan untuk mean dari variabel dependen $Y$ untuk su
 
 $$
 \hat{y} \pm t_{\alpha/2}s\sqrt{\frac{1}{n}+\frac{(x-\bar{x})^2}{\sum_{i=1}^{n}(x_i-\bar{x})^2}}
-$$ Untuk menghitung ini dengan R, misal secara khusus untuk observasi $X = 2$ dengan signifikansi $\alpha = 0.05$, boleh dihitung secara manual sebagai berikut:
+$$
+
+Untuk menghitung ini dengan R, misal secara khusus untuk observasi $X = 2$ dengan signifikansi $\alpha = 0.05$, boleh dihitung secara manual sebagai berikut:
 
 ```{r}
 x <- 2
@@ -199,7 +203,9 @@ Jika sebelumnya merupakan interval kepercayaan untuk mean, selanjutnya interval 
 
 $$
 \hat{y} \pm t_{\alpha/2}s\sqrt{1+\frac{1}{n}+\frac{(x-\bar{x})^2}{\sum_{i=1}^{n}(x_i-\bar{x})^2}}
-$$ Secara manual pada R:
+$$
+
+Secara manual pada R:
 
 ```{r}
 x <- 2

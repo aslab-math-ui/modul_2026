@@ -49,7 +49,7 @@ df$kolom_anda <- factor(df$kolom_anda)
 
 Eksplorasi dan visualisasi data merupakan salah satu langkah dari analisis deskriptif. Tujuannya adalah untuk mengetahui karakteristik dan pola-pola khusus dari data yang dimiliki. Karakteristik-karakteristik ini bisa membantu kita untuk memodelkan hubungan antar variabel dengan lebih akurat.
 
-Misal, kita ingin memodelkan `Sepal.Length` (sebagai variabel respon) menggunakan `Petal.Length` (numerik) dan `Species` (kategorik) sebagai prediktor. 
+Misal, kita ingin memodelkan `Sepal.Length` (sebagai variabel respon) menggunakan `Petal.Length` (numerik) dan `Species` (kategorik) sebagai prediktor.
 
 Kita dapat membuat *scatterplot* yang membedakan warna titik berdasarkan kategori `Species`.
 
@@ -118,15 +118,15 @@ $$Y = \beta_0 + \beta_1 X_1 + \beta_2 X_{2B} + \beta_3 X_{2C} + \varepsilon$$
 
 dengan:
 
-* $Y$ adalah `Sepal.Length`
+-   $Y$ adalah `Sepal.Length`
 
-* $X_1$ adalah `Petal.Length`
+-   $X_1$ adalah `Petal.Length`
 
-* $X_{2B}$ adalah *dummy* untuk `Speciesversicolor` (1 jika versicolor, 0 lainnya)
+-   $X_{2B}$ adalah *dummy* untuk `Speciesversicolor` (1 jika versicolor, 0 lainnya)
 
-* $X_{2C}$ adalah *dummy* untuk `Speciesvirginica` (1 jika virginica, 0 lainnya)
+-   $X_{2C}$ adalah *dummy* untuk `Speciesvirginica` (1 jika virginica, 0 lainnya)
 
-* $\varepsilon \sim N(0, \sigma^2)$ adalah asumsi error yang berdistribusi normal.
+-   $\varepsilon \sim N(0, \sigma^2)$ adalah asumsi error yang berdistribusi normal.
 
 Alasan kita mengajukan model ini adalah untuk mengevaluasi apakah pengaruh `Petal.Length` terhadap `Sepal.Length` tetap konsisten, dan seberapa besar perbedaan yang diberikan oleh masing-masing jenis spesies.
 
@@ -151,9 +151,9 @@ $$\hat{Y} = 3.64386 + 0.93194 X_1 - 1.65819 X_{2B} - 2.22476 X_{2C}$$
 
 Selanjutnya, kita dapat melakukan pengujian hipotesis regresi secara serentak (Uji F). Uji ini juga dikenal sebagai goodness-of-fit test.
 
-* $H_0 : \beta_1 = \beta_2 = \beta_3 = 0$ (Model tidak berguna)
+-   $H_0 : \beta_1 = \beta_2 = \beta_3 = 0$ (Model tidak berguna)
 
-* $H_1 :$ Setidaknya ada satu $\beta_j \neq 0$ (Model berguna)
+-   $H_1 :$ Setidaknya ada satu $\beta_j \neq 0$ (Model berguna)
 
 Lihat pada baris paling bawah *output*: `F-statistic: 228.5` dengan `p-value: < 2.2e-16`. Karena *p-value* sangat kecil ($< 0.05$), kita tolak $H_0$. Kesimpulannya, model yang diajukan berguna/*fit* pada data.
 
@@ -165,9 +165,9 @@ Akurasi model dapat dijelaskan menggunakan *Multiple R-squared* ($R^2$). Pada *o
 
 Besarnya peran dari variabel prediktor terhadap variabel target dan signifikansi variabel prediktor tersebut dalam menjelaskan variabel target dapat dijawab sebagai berikut:
 
-* **Peran:** Setiap kenaikan 1 satuan `Petal.Length`, `Sepal.Length` diestimasi naik sebesar $0.93194$ satuan, dengan asumsi prediktor lain konstan. 
+-   **Peran:** Setiap kenaikan 1 satuan `Petal.Length`, `Sepal.Length` diestimasi naik sebesar $0.93194$ satuan, dengan asumsi prediktor lain konstan.
 
-* **Signifikansi:** Lihat kolom `Pr(>|t|)` untuk masing-masing variabel. Nilai *p-value* untuk `Petal.Length`, `Speciesversicolor`, dan `Speciesvirginica` semuanya $< 0.05$ (ditandai dengan `***`). Hal ini menunjukkan bahwa peran dari masing-masing variabel prediktor tersebut adalah signifikan secara statistik dalam menjelaskan variabel target.
+-   **Signifikansi:** Lihat kolom `Pr(>|t|)` untuk masing-masing variabel. Nilai *p-value* untuk `Petal.Length`, `Speciesversicolor`, dan `Speciesvirginica` semuanya $< 0.05$ (ditandai dengan `***`). Hal ini menunjukkan bahwa peran dari masing-masing variabel prediktor tersebut adalah signifikan secara statistik dalam menjelaskan variabel target.
 
 ## 5. Taksiran Intersep dan Maknanya
 
@@ -209,17 +209,16 @@ test_rmse <- sqrt(mean(data_test$Error^2))
 test_rmse
 
 # R-squared
-SS_res_test <- sum(data_test$Error^2)
-SS_tot_test <- sum((data_test$Sepal.Length - mean(data_test$Sepal.Length))^2)
-test_r2 <- 1 - (SS_res_test / SS_tot_test)
+SSR_test <- sum(data_test$Error^2)
+SST_test <- sum((data_test$Sepal.Length - mean(data_test$Sepal.Length))^2)
+test_r2 <- 1 - (SSR_test / SST_test)
 test_r2
 
 ggplot(data_test, aes(x = Petal.Length, color = Species)) +
   geom_point(aes(y = Sepal.Length), size = 2, alpha = 0.7) +
   geom_line(aes(y = Predicted_Sepal_Length), linewidth = 1) +
   scale_color_viridis_d() +
-  labs(title = "Prediksi Model pada Data Uji (Test Data)",
-       subtitle = "Garis putus-putus menunjukkan hasil prediksi dari model latih",
+  labs(title = "Prediksi Model pada Data Test",
        x = "Petal Length",
        y = "Sepal Length",
        color = "Spesies") +

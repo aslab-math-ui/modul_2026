@@ -2,7 +2,7 @@
 title: "(Pertemuan 3) Inferensi, Analisis Residual, dan Resampling Model"
 subtitle: "Inference, Residual Analysis, and Model Resampling"
 author: "Tim Asisten Lab Departemen Matematika UI"
-image: "image3.jpg"
+image: "image4.jpg"
 format: html
 editor: visual
 date: 2026-03-15

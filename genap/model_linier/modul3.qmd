@@ -1,0 +1,264 @@
+---
+title: "(Pertemuan 3) Inferensi, Analisis Residual, dan Resampling Model"
+subtitle: "Inference, Residual Analysis, and Model Resampling"
+author: "Tim Asisten Lab Departemen Matematika UI"
+image: "image3.jpg"
+format: html
+editor: visual
+date: 2026-03-15
+---
+
+Kembali ke [**Model Linier**](https://aslab-math-ui.github.io/modul-prak/modul/2026/genap/model_linier/molin2026genap.html)
+
+# Pendahuluan
+
+Pada modul sebelumnya, kita telah mempelajari *pre-processing*, pembagian data latih dan uji, serta pengolahan awal regresi berganda yang melibatkan variabel prediktor kategorik. Modul ini akan melanjutkan analisis dari pemodelan yang telah dilakukan untuk melakukan inferensi, evaluasi metrik lebih mendalam, analisis residual, serta melihat dampak dari *resampling* dan ukuran data terhadap kestabilan model.
+
+Mari kita persiapkan kembali *environment* R kita dengan me-*load* *library*, membagi data 80% (dengan *seed* yang sama), dan membentuk ulang model dari modul sebelumnya.
+
+```{r}
+library(tidyverse)
+
+data(iris)
+df <- iris
+
+set.seed(2026) 
+n_total <- nrow(df)
+n_train <- round(0.80 * n_total)
+index_train <- sample(1:n_total, n_train)
+
+data_1 <- df[index_train, ]  
+
+model_1 <- lm(Sepal.Length ~ Petal.Length + Species, data = data_1)
+summary(model_1)
+```
+
+# Prediksi dan Interval
+
+Dalam analisis regresi, kita seringkali ingin mengestimasi nilai target untuk suatu observasi baru. Langkah pertama adalah menentukan *support* (domain) dari variabel prediktor numerik kita pada data latih.
+
+```{r}
+domain_petal <- range(data_1$Petal.Length)
+domain_petal
+
+```
+
+Nilai *support* untuk `Petal.Length` berada di rentang $1.0$ hingga $6.9$. Mari kita ambil 1 nilai di dalam rentang tersebut, misalnya $X = 3$, untuk spesies "versicolor".
+
+## Taksiran Nilai (Point Estimate)
+
+Kita dapat menghitung taksiran nilai variabel target ($\hat{Y}$) untuk prediktor yang telah ditetapkan.
+
+```{r}
+pred_point <- predict(model_1, newdata = data.frame(Petal.Length = 3, Species = "versicolor"))
+pred_point
+
+```
+
+Interpretasi untuk hasil ini yaitu jika terdapat bunga spesies *versicolor* dengan `Petal.Length` sebesar 3, taksiran rata-rata `Sepal.Length`-nya adalah $4.78148$.
+
+## Interval Prediksi dan Interval Kepercayaan
+
+Untuk mempertimbangkan ketidakpastian, kita dapat membangun interval prediksi dan interval kepercayaan  untuk taksiran nilai di atas.
+
+```{r}
+# Interval Prediksi
+predict(model_1, newdata = data.frame(Petal.Length = 3, Species = "versicolor"), interval = "prediction", level = 0.95)
+
+# Interval Kepercayaan
+predict(model_1, newdata = data.frame(Petal.Length = 3, Species = "versicolor"), interval = "confidence", level = 0.95)
+
+```
+
+Secara makna dan penggunaan, kedua interval ini berbeda.
+
+* **Interval Kepercayaan (Confidence Interval)** digunakan untuk mengestimasi rentang rata-rata sesungguhnya (populasi) dari $Y$ untuk nilai $X$ tertentu. Digunakan ketika kita tertarik pada rata-rata kelompok.
+
+
+* **Interval Prediksi (Prediction Interval)** digunakan untuk memprediksi rentang nilai $Y$ untuk suatu observasi *individu* baru pada nilai $X$ tertentu. Interval ini selalu lebih lebar karena menggabungkan variansi dari estimasi rata-rata ditambah dengan variansi acak individu ($\sigma^2$).
+
+
+
+# Analisis Hubungan Antar Statistik (Uji F, Uji t, Korelasi)
+
+## Kemiringan dan Korelasi
+
+Hubungan antara kemiringan garis regresi ($\hat{\beta}_1$) dengan koefisien korelasi ($r$) secara spesifik berlaku hanya pada **Regresi Linear Sederhana**. Hubungannya dirumuskan dengan $\hat{\beta}_1 = r \frac{S_y}{S_x}$. Mari kita verifikasi dengan memodelkan regresi sederhana `Sepal.Length` dan `Petal.Length`.
+
+```{r}
+model_slr <- lm(Sepal.Length ~ Petal.Length, data = data_1)
+summary(model_slr)
+beta_1_slr <- coef(model_slr)["Petal.Length"]
+
+r <- cor(data_1$Petal.Length, data_1$Sepal.Length)
+Sy <- sd(data_1$Sepal.Length)
+Sx <- sd(data_1$Petal.Length)
+beta_1_formula <- r * (Sy / Sx)
+
+c(Model_Slope = unname(beta_1_slr), Formula_Slope = beta_1_formula)
+
+```
+
+Terlihat bahwa perhitungan kemiringan via model dan via rumus korelasi menghasilkan nilai yang identik.
+
+## Uji F dan Koefisien Determinasi ($R^2$)
+
+Uji F dan $R^2$ memiliki hubungan matematis yang kuat. Statistik F dapat diturunkan langsung dari $R^2$ menggunakan rumus:
+
+
+$$F = \frac{R^2 / k}{(1 - R^2) / (n - k - 1)}$$
+
+Mari kita verifikasi pada `model_1` (Regresi Berganda).
+
+```{r}
+R2 <- summary(model_1)$r.squared
+k <- 3 # Jumlah prediktor (1 numerik + 2 dummy)
+n <- nrow(data_1)
+
+F_calc <- (R2 / k) / ((1 - R2) / (n - k - 1))
+F_model <- summary(model_1)$fstatistic["value"]
+
+c(Calculated_F = unname(F_calc), Model_F = unname(F_model))
+
+```
+
+## Uji t dan Uji F
+
+Berdasarkan hasil regresi linear sederhana, nilai kuadrat dari statistik uji t untuk kemiringan ($\beta_1$) akan sama persis dengan nilai statistik uji F untuk keseluruhan model ($t^2 = F$). Hal ini dikarenakan pada regresi sederhana, menguji signifikansi 1 variabel sama dengan menguji keseluruhan model.
+
+```{r}
+t_val <- summary(model_slr)$coefficients["Petal.Length", "t value"]
+F_val <- summary(model_slr)$fstatistic["value"]
+
+c(t_squared = unname(t_val^2), F_stat = unname(F_val))
+
+```
+
+## Regression Through the Origin (RTO)
+
+Apakah direkomendasikan untuk melakukan fitting regresi yang melalui titik asal (tanpa intersep) pada data ini?
+Jawabannya adalah **tidak direkomendasikan**. Menghilangkan intersep berarti memaksa model mengasumsikan bahwa ketika `Petal.Length` bernilai 0, `Sepal.Length` mutlak bernilai 0. Secara biologi, tidak ada bunga yang memiliki panjang kelopak 0. Intersep diperlukan secara matematis untuk menjamin residu memiliki rata-rata nol dan meminimalkan bias pada garis fit, meskipun intersep tersebut tidak memiliki interpretasi logis pada $X=0$.
+
+# Estimasi Variansi dan Analisis Residual
+
+## Taksiran Variansi Error dan Variansi Kemiringan
+
+Taksiran variansi dari error ($\hat{\sigma}^2$) diestimasi menggunakan *Mean Squared Error* (MSE), yang merupakan kuadrat dari *Residual Standard Error* (RSE) pada model.
+
+```{r}
+sigma_sq <- sigma(model_1)^2
+sigma_sq
+
+```
+
+Pada regresi linear berganda, hubungan antara variansi error ($\sigma^2$) dengan variansi taksiran koefisien regresi ($\hat{\sigma}^2_{\beta_j}$) dirumuskan dalam bentuk matriks sebagai berikut:
+
+$$Var(\hat{\beta}) = \sigma^2 (X^T X)^{-1}$$
+
+dimana $X$ adalah matriks yang memuat kolom intersep (yang seluruh entrinya akan bernilai 1) beserta nilai-nilai observasi prediktor. Nilai variansi untuk masing-masing taksiran parameter $\hat{\beta}_j$ terletak pada diagonal utama dari matriks hasil perhitungan tersebut.
+
+Persamaan ini menunjukkan secara jelas bahwa variansi dari kemiringan regresi berbanding lurus dengan variansi error ($\sigma^2$). Semakin besar variansi error (data semakin menyebar dari garis regresi), ketidakpastian atau variansi dari estimasi kemiringan regresinya juga akan semakin besar.
+
+Mari kita verifikasi hubungan matematis ini di R dengan menghitungnya secara manual menggunakan operasi matriks, lalu membandingkannya dengan nilai pada diagonal utama fungsi bawaan `vcov()` dari model, secara spesifik untuk prediktor `Petal.Length`.
+
+```{r}
+X <- model.matrix(model_1)
+XtX_inv <- solve(t(X) %*% X)
+var_beta_manual <- sigma_sq * XtX_inv
+var_petal_manual <- var_beta_manual["Petal.Length", "Petal.Length"]
+
+var_petal_model <- vcov(model_1)["Petal.Length", "Petal.Length"]
+
+c(Perhitungan_Manual = var_petal_manual, Fungsi_Bawaan_Model = var_petal_model)
+
+```
+
+## Visualisasi Residual
+
+Analisis residual penting untuk mengecek asumsi klasik regresi.
+
+```{r}
+plot(fitted(model_1), resid(model_1), 
+     main = "Scatterplot Fitted vs Residuals", 
+     xlab = "Fitted Values", ylab = "Residuals", 
+     pch = 20, col = "blue")
+abline(h = 0, col = "red", lwd = 2)
+
+```
+
+Scatterplot residual menunjukkan sebaran acak di sekitar garis nol membentuk pola yang lebih tersebar di awal dibandingkan dengan di akhir. Hal ini mengindikasikan bahwa asumsi homoskedastisitas (variansi konstan) sedikit dilanggar.
+
+```{r}
+hist(resid(model_1), 
+     main = "Histogram of Residuals", 
+     xlab = "Residuals", 
+     col = "lightblue", border = "black", breaks = 15)
+
+```
+
+Histogram residual berbentuk cukup simetris menyerupai lonceng, yang mengindikasikan bahwa asumsi error berdistribusi normal cukup terpenuhi.
+
+# Pengaruh Resampling dan Ukuran Data
+
+## Resampling Data 80% (Data 2)
+
+Mari kita lakukan pemilihan sampel secara acak untuk 80% data lagi menggunakan *seed* yang berbeda, menyimpannya di `Data_2`, lalu melakukan fit ulang.
+
+```{r}
+set.seed(999)
+index_train_2 <- sample(1:n_total, n_train)
+data_2 <- df[index_train_2, ]
+
+model_2 <- lm(Sepal.Length ~ Petal.Length + Species, data = data_2)
+summary(model_2)
+```
+
+Perbandingan persamaan regresi model 1 dan model 2:
+
+```{r}
+coef(model_1)
+coef(model_2)
+
+```
+
+Taksiran koefisien pada model yang di-fit pada `data_2` sedikit berbeda dengan `data_1`. Hal ini menunjukkan adanya *variabilitas sampling*. Namun, karena modelnya stabil, perubahan koefisien tersebut tidak terlalu ekstrem.
+
+Uji Kesesuaian Model 2:
+
+```{r}
+summary(model_2)$fstatistic
+
+```
+
+Statistik F pada `model_2` tetap sangat besar dan *p-value* sangat kecil, menunjukkan kesimpulan yang sama dengan model pada `data_1`: bahwa model secara signifikan berguna (*fit*) pada data.
+
+## Fitting 100% Data Lengkap
+
+Bagaimana jika kita menggunakan keseluruhan 100% data untuk *fitting*?
+
+```{r}
+model_full <- lm(Sepal.Length ~ Petal.Length + Species, data = df)
+summary(model_full)
+coef(model_full)
+```
+
+Taksiran koefisien dari `model_full` berada di antara atau sedikit bergeser dari taksiran `model_1` dan `model_2`. Estimasi menggunakan data penuh (100%) merepresentasikan taksiran terbaik (*best fit*) terhadap populasi semu dari dataset yang kita miliki karena menggunakan informasi maksimal.
+
+Uji Kesesuaian Model Penuh:
+
+```{r}
+summary(model_full)$fstatistic
+
+```
+
+Kesimpulan kesesuaian model tetap sama, di mana model secara signifikan berguna. Nilai F-statistik pada data penuh sangat tinggi dengan keyakinan (p-value) yang stabil.
+
+Derajat Bebas (Degrees of Freedom):
+
+```{r}
+summary(model_full)$df
+summary(model_1)$df
+
+```
+
+Pada `model_full`, derajat bebas residual adalah $150 - 3 - 1 = 146$. Sedangkan pada `model_1` dan `model_2`, derajat bebasnya adalah $120 - 3 - 1 = 116$. Penambahan jumlah data ($n$) langsung meningkatkan derajat bebas residual. Semakin besar derajat bebas residual, estimasi variansi akan lebih akurat dan uji t/F akan lebih "mudah" menolak $H_0$ jika memang terdapat efek (meningkatkan *statistical power*).

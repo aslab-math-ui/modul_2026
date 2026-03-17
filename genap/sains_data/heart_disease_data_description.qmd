@@ -14,7 +14,7 @@ format: html
 </style>
 Kembali ke [Tugas 2](./tugas2.qmd)
 
-<a href="./insurance_claims_data_description.txt" class="btn">txt</a>
+<a href="./heart_disease_data_description.txt" class="btn">txt</a>
 
 --------
-{{< include insurance_claims_data_description.txt >}}
+{{< include heart_disease_data_description.txt >}}

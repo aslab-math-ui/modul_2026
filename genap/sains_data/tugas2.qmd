@@ -52,7 +52,9 @@ Kembali ke [Sains Data](./saindat2026genap.qmd)
 
 6. Pengumpulan tugas dilakukan ke Google Forms berikut ini, sesuai dengan kelas Anda di SIAK NG (link akan selalu sama untuk semua tugas praktikum Sains Data):
 
-    - Kelas A dan B: <https://docs.google.com/forms/d/e/1FAIpQLScVXON0gmiBZSfbdlJyoMJtY_lDz7RTbXEO9ORQoprwIkz-SA/viewform?usp=header>
+    - Kelas A : <https://docs.google.com/forms/d/e/1FAIpQLScVXON0gmiBZSfbdlJyoMJtY_lDz7RTbXEO9ORQoprwIkz-SA/viewform>
+
+    - Kelas B : <https://docs.google.com/forms/d/e/1FAIpQLSd02u_BvDiYDancktQXvik7xY5yvjeyWLaaQBv3QiW-H11BoQ/viewform>
 
 7. Dengan durasi pengerjaan sekitar **1 (satu) bulan**, tenggat waktu *(deadline)* pengumpulan Tugas 1 ini (termasuk revisi) adalah:
 
@@ -72,7 +74,7 @@ Kembali ke [Sains Data](./saindat2026genap.qmd)
 
 # Soal
 
-Diberikan dataset `heart_disease_uci.csv` yang berisi data pengajuan klaim asuransi kendaraan yang diajukan oleh para tertanggung (nasabah). Dataset dapat di-*download* pada tautan berikut:
+Diberikan dataset `heart_disease_uci.csv` yang berisi informasi klinis pasien yang digunakanterkait keberadaan penyakit jantung. Dataset dapat di-*download* pada tautan berikut (gunakan Ctrl + S jika tidak otomatis tersimpan):
 
 <a href="https://raw.githubusercontent.com/aslab-math-ui/asset/main/sains_data/datasets/heart_disease_uci.csv"
    download="insurance_claims.csv"

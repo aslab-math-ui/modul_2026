@@ -106,7 +106,7 @@ b. **EDA:** cobalah menduga, kira-kira fitur/kolom/variabel apa saja yang memili
 
 c. Lakukan ***train-test-split*** (rasio dibebaskan, misal 80:20). Jangan lupa gunakan suatu `random_state`.
 
-d. ***Modelling:*** Buatlah minimal tiga model masing-masing menggunakan ketiga metode klasifikasi tersebut, yaitu:
+d. ***Modelling:*** Buatlah minimal satu model untuk setiap metode klasifikasi yang sudah diajarkan, yakni:
     - regresi logistik (beri alasan mengenai fitur yang dipilih sebagai variabel prediktor),
 
     - *decision tree* (Tampilkan juga *decision tree* yang terbentuk), dan 

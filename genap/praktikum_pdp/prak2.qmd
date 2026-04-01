@@ -1,12 +1,14 @@
 ---
-title: "Modul 2 Praktikum Pesamaan Diferensial Parsial: Beda Hingga pada Persamaan Nonlinear dan Persamaan Transport"
+title: "Modul 2 Praktikum Pesamaan Diferensial Parsial: Beda Hingga pada PDB Nonlinear dan Persamaan Transport"
 subtitle: "*Finite Difference* untuk PDB Nonlinear dan Persamaan Transport"
 author: "Tim Asisten Lab Matematika UI"
-date: "11 Maret 2026"
-format: "html"
+date: "1 April 2026"
+format:
+  html:
+    toc: true
 ---
 
-Pada modul ini akan dibahas tentang penggunaan Beda Hingga pada PDB Nonlinear dan Persamaan Transport.
+Pada bagian sebelumnya telah dibahas menggunakan metode beda hingga untuk menyelesaikan masalah nilai batas pada PDB Linear. Pada bagian ini akan dibahas metode beda hingga untuk menyelesaikan PDB Nonlinear, lalu selanjutnya akan dibahas sedikit mengenai penggunaan beda hingga untuk masalah nilai batas pada PDP spesifiknya adalah Persamaan Transport.
 
 # Metode Beda Hingga untuk Persamaan Nonlinear
 
@@ -68,20 +70,105 @@ $$
 
 ## Kode
 
+Kode di bawah adalah penerapan algoritma dengan mencari invers dari matriks secara langsung. 
+
 ::: {.panel-tabset}
-### *Function file* `nonlinear_fd_langsung_on2.m` - nama *file* harus sama dengan nama fungsi
+### *Function file* `nonlinear_fd_langsung.m` - nama *file* harus sama dengan nama fungsi
 
 ```octave
-function [x_grid, w_grid] = nonlinear_fd_langsung_on2(f, fy, fyp, a, b, N, alph, bet, tol, M)
+function [x_grid, w_grid] = nonlinear_fd_langsung1(f, fy, fyp, a, b, N, alph, bet, tol, M)
+
   h = (b-a) / (N+1);
   x_grid = (a : h : b)'; % transpos juga agar menjadi vektor kolom
   x = x_grid(2 : N+1);
   w = zeros(N, 1);
-  
+
   for i = 1 : N
     w(i) = alph + i * ((bet - alph)/(b-a)) * h;
   endfor
-  
+
+  % banyaknya iterasi
+  k = 1;
+  err = tol + 1;
+
+  % selama belum memenuhi toleransi ataupun mencapai batas iterasi
+  while (!(err <= tol) && k != M+1)
+
+    % menyusun matriks Jacobian
+    matriks_J = zeros(N, N); % isi nol semua dulu
+
+    for i = 1 : N % untuk tiap baris ke-i, dengan i = 1, ..., N
+
+      % kiri/bawah diagonal (kecuali di baris pertama)
+      if (i == N) % w(N+1) = beta
+        matriks_J(i, i-1) = -(1 + h/2 * fyp(x(i), w(i), (bet - w(i-1))/(2*h)));
+      elseif (i != 1) % rumus biasa
+        matriks_J(i, i-1) = -(1 + h/2 * fyp(x(i), w(i), (w(i+1) - w(i-1))/(2*h)));
+      endif
+
+      % pada diagonal
+      if (i == 1) % w(0) = alfa
+        matriks_J(i, i) = 2 + h^2 * fy(x(i), w(i), (w(i+1) - alph)/(2*h));
+      elseif (i == N) % w(N+1) = beta
+        matriks_J(i, i) = 2 + h^2 * fy(x(i), w(i), (bet - w(i-1))/(2*h));
+      else % rumus biasa
+        matriks_J(i, i) = 2 + h^2 * fy(x(i), w(i), (w(i+1) - w(i-1))/(2*h));
+      endif
+
+      % kanan/atas diagonal (kecuali di baris terakhir)
+      if (i == 1) % w(0) = alfa
+        matriks_J(i, i+1) = -(1 - h/2 * fyp(x(i), w(i), (w(i+1) - alph)/(2*h)));
+      elseif (i != N) % rumus biasa
+        matriks_J(i, i+1) = -(1 - h/2 * fyp(x(i), w(i), (w(i+1) - w(i-1))/(2*h)));
+      endif
+    endfor
+
+    % menyusun vektor d
+    d = zeros(N, 1);
+
+    % khusus baris pertama
+    i = 1;
+    d(i) = -alph + 2 * w(i) - w(i+1) + h^2 * f(x(i), w(i), (w(i+1) - alph)/(2*h));
+
+    for i = 2 : (N-1)
+      d(i) = -w(i-1) + 2 * w(i) - w(i+1) + h^2 * f(x(i), w(i), (w(i+1) - w(i-1))/(2*h));
+    endfor
+
+    % khusus baris terakhir
+    i = N;
+    d(i) = -w(i-1) + 2 * w(i) - bet + h^2 * f(x(i), w(i), (bet - w(i-1))/(2*h));
+
+    % selesaikan SPL
+    v = matriks_J \ (-d);
+
+    % update w
+    w = w + v;
+
+    % hitung error dengan norm L2 (Euclid)
+    err = sum(v.^2);
+
+    k += 1; % lanjut ke iterasi selanjutnya
+  endwhile
+
+  % gabungkan w_0 (alfa), dengan w_1, ..., w_N, dengan w_{N+1} (beta)
+  w_grid = [alph; w; bet];
+endfunction
+```
+:::
+
+::: {.panel-tabset}
+### *Function file* `nonlinear_fd_langsung2.m` - nama *file* harus sama dengan nama fungsi
+
+```octave
+function [x_grid, w_grid] = nonlinear_fd_langsung2(f, fy, fyp, a, b, N, alph, bet, tol, M)
+  h = (b-a) / (N+1);
+  x_grid = (a : h : b)'; % transpos juga agar menjadi vektor kolom
+  x = x_grid(2 : N+1);
+  w = zeros(N, 1);
+  for i = 1 : N
+    w(i) = alph + i * ((bet - alph)/(b-a)) * h;
+  endfor
+
   % banyaknya iterasi
   k = 1;
 
@@ -121,7 +208,7 @@ function [x_grid, w_grid] = nonlinear_fd_langsung_on2(f, fy, fyp, a, b, N, alph,
         endif
       endfor
     endfor
-    
+
     % menyusun vektor d
     d = zeros(N, 1);
     % khusus baris pertama
@@ -133,10 +220,10 @@ function [x_grid, w_grid] = nonlinear_fd_langsung_on2(f, fy, fyp, a, b, N, alph,
     % khusus baris terakhir
     i = N;
     d(i) = -w(i-1) + 2 * w(i) - bet + h^2 * f(x(i), w(i), (bet - w(i-1))/(2*h));
-    
+
     % selesaikan SPL
     v = matriks_J \ (-d);
-    
+
     % update w
     w = w + v;
 
@@ -149,5 +236,495 @@ function [x_grid, w_grid] = nonlinear_fd_langsung_on2(f, fy, fyp, a, b, N, alph,
   % gabungkan w_0 (alfa), dengan w_1, ..., w_N, dengan w_{N+1} (beta)
   w_grid = [alph; w; bet];
 endfunction
+```
+:::
+
+## Contoh
+
+### Contoh 1
+
+Selesaikan masalah nilai batas berikut
+
+$$y'' = \frac{1}{8} \left(32 + 2x^3 - yy'\right), \quad 1 \le x \le 3$$
+$$y(1) = 17, \quad y(3) = \frac{43}{3}$$
+
+dengan $h=0.1$, toleransi $10^{-8}$, dan maksimum iterasi $M=30$. 
+
+Bandingkan hasilnya dengan solusi eksak
+
+$$y(x) = x^2 + \frac{16}{x}$$
+
+:::{.callout-tip title="Siapakan terlebih dahulu turunan parsial yang dibutuhkan."}
+
+$$y'' = f(x, y, y') = \frac{1}{8} \left(32 + 2x^3 - yy'\right)$$
+
+$$f_{y} (x, y, y') = \frac{\partial f}{\partial y} (x, y, y') = -\frac{1}{8} y'$$
+
+$$f_{y'} (x, y, y') = \frac{\partial f}{\partial y'} (x, y, y') = -\frac{1}{8} y$$
+
+:::
+
+::: {.panel-tabset}
+### *Script file* `coba_nonlinear_fd1.m` - nama *file* bebas
+
+```octave
+f = @(x, y, yp) ((1/8)*(32 + 2 * x.^3 - y .* yp));
+fy = @(x, y, yp) (-yp/8);
+fyp = @(x, y, yp) (-y/8);
+
+% Diskritisasi
+a = 1; b = 3; h = 0.1; N = (b - a)/h - 1;
+
+% Nilai Batas
+alph = 17; bet = 43/3;
+
+tol = 10^(-8); M = 30;
+
+[x_grid, w_grid] = nonlinear_fd_langsung1(f, fy, fyp, a, b, N, alph, bet, tol, M)
+
+%[x_grid1, w_grid1] = nonlinear_fd_langsung1(f, fy, fyp, a, b, N, alph, bet, tol, M);
+%[x_grid2, w_grid2] = nonlinear_fd_langsung2(f, fy, fyp, a, b, N, alph, bet, tol, M);
+
+% solusi eksak
+sln = @(x) ((x .^ 2) + ((16 ./ x)));
+y_eksak = sln(x_grid);
+
+% menghitung error
+err_w = abs(y_eksak - w_grid);
+err_total = sum(err_w); % norm L1 (taxicab/Manhattan)
+
+% tampilkan tabel
+format long;
+disp("Tabel aproksimasi, solusi y(x), dan error:");
+[x_grid, w_grid, y_eksak, err_w]
+disp("Error total (norm L1):");
+disp(err_total);
+format;
+
+hold on;
+fplot(sln, [a, b], 'k');
+scatter(x_grid, w_grid, 'b');
+title("Aproksimasi y(x)");
+legend('location', 'northeast');
+legend("Eksak", "Aproksimasi");
+
+% Tampilan Plot untuk membandingkan dua pendekatan
+##subplot(1, 2, 1);
+##hold on;
+##fplot(sln, [a, b], 'k');
+##scatter(x_grid1, w_grid1, 'b');
+##title("Aproksimasi y(x) Pertama");
+##legend("Eksak", "Aproksimasi 1", 'location', 'northeast');
+##hold off;
+## ===================
+##subplot(1, 2, 2);
+##hold on;
+##fplot(sln, [a, b], 'k');
+##scatter(x_grid2, w_grid2, 'r');
+##title("Aproksimasi y(x) Kedua");
+##legend("Eksak", "Aproksimasi 2", 'location', 'northeast');
+##hold off;
+```
+:::
+
+### Contoh 2
+
+Gunakan metode beda hingga nonlinier *(nonlinear finite difference)* dengan $h=0.1$ dan toleransi $10^{-4}$ untuk mengaproksimasi *Boundary Value Problem* (BVP) / Masalah Nilai Batas (MNB) berikut:
+$$
+\begin{aligned}
+y^{\prime \prime} & =y^{\prime}+2(y-\ln x)^3-\frac{1}{x}, \quad 2 \leq x \leq 3 \\
+y(2) & =\frac{1}{2}+\ln 2, \quad y(3)=\frac{1}{3}+\ln 3
+\end{aligned}
+$$
+
+Bandingkan dengan solusi eksak:
+
+$$y(x)=\frac{1}{x}+\ln x$$
+
+:::{.callout-tip title="Siapakan terlebih dahulu turunan parsial yang dibutuhkan."}
+
+$$y'' = f\left(x,y,y'\right) = y'+2(y-\ln x)^3-\frac{1}{x}$$
+
+$$f_{y}\left(x,y,y'\right) = \frac{\partial f}{\partial y} \left(x,y,y'\right) = 6\left(y - \ln{x}\right)^2$$
+
+$$f_{y'}\left(x,y,y'\right) = \frac{\partial f}{\partial y'} \left(x,y,y'\right) = 1$$
+
+:::
+
+::: {.panel-tabset}
+### *Script file* `coba_nonlinear_fd2.m` - nama *file* bebas
+
+```octave
+f = @(x,y,yp) yp + 2*(y-log(x)).^3 - 1./x ; 
+fy = @(x,y,yp) 6*(y-log(x)).^2; 
+fyp = @(x,y,yp) 1; 
+
+% Diskritisasi
+a = 2; b = 3; N = 9; 
+
+% Nilai batas
+alph = 0.5 + log(2); bet = 1/3 + log(3);
+
+tol = 10^(-4); 
+M = 30; 
+
+[x_grid, w_grid] = nonlinear_fd_langsung(f, fy, fyp, a, b, N, alph, bet, tol, M);
+
+% solusi eksak
+sln = @(x) 1./x + log(x);
+y_eksak = sln(x_grid);
+
+% menghitung error
+err_w = abs(y_eksak - w_grid);
+err_total = sum(err_w); % norm L1 (taxicab/Manhattan)
+
+% tampilkan tabel
+format long;
+disp("Tabel aproksimasi, solusi y(x), dan error:");
+[x_grid, w_grid, y_eksak, err_w]
+disp("Error total (norm L1):");
+disp(err_total);
+format;
+
+hold on;
+fplot(sln, [a, b], 'k');
+scatter(x_grid, w_grid, 'r');
+title("Aproksimasi y(x)");
+legend("Eksak", "Aproksimasi");
+legend("location", "northwest");
+```
+:::
+
+# Metode Beda Hingga untuk Persamaan Transport
+
+Persamaan transport adalah salah satu bentuk PDP paling sederhana. Persamaan transport bisa dituliskan sebagai berikut:
+$$u_t + du_x = 0, \quad (x,t) \in [0, L] \times [0, T],$$
+$$u(x,0) = f(x), \quad 0 \le x \le L.$$
+
+Untuk kebutuhan praktikum, bentuk umum persamaan transport bisa ditulis:
+$$u_t + du_x = 0, \quad \text{xb} < x < \text{xu}, \quad \text{tb} < t < \text{tu}$$
+
+$$u(x,\text{tb}) = f(x), \quad \text{xb} \le x \le \text{xu}$$
+
+$$u(\text{xb},t) = \text{lb}(t), \quad \text{tb} < t < \text{tu}$$
+
+$$u(\text{xu},t) = \text{rb}(t), \quad \text{tb} < t < \text{tu}$$
+
+Solusi eksak dari persamaan transport bisa ditulis $u(x,t) = f(x-dt)$ (catatan: $dt$ di sini adalah nilai $d$ dikali variabel $t$, bukan diferensial). Interval $x$ dan $t$ dipartisi dengan *step size* $h = \Delta x$ dan $k = \Delta t$ berturut-turut sehingga diperoleh 
+$$x_j = (j-1) \Delta x, \quad j = 1, 2, \dots, N_x = m$$
+$$t_n = (n-1) \Delta t, \quad n = 1, 2, \dots, N_t = N$$
+Dari sini diperoleh suau *grid* dengan titik-titik $(x_j, t_n)$. Untuk nilai hampiran di titik-titik grid tersebut, bisa digunakan notasi $u_j^n \equiv u(x_j, t_n)$ ataupun $w_{j,n} \equiv u(x_j, t_n)$.
+
+Berikut beberapa metode untuk mengaproksimasi persamaan transport:
+
+* Metode Courant-Isaacson-Rees (FTBS/upwind)
+
+* Metode Richardson (FTCS)
+
+* Metode Lax
+
+Untuk penggunaan pada ketiga metode akan digunakan masalah nilai batas berikut.
+
+Diberikan masalah nilai batas
+
+$$u_t + u_x = 0, \quad 0 \le x \le 1, \quad 0 \le t \le 1,$$
+$$u(x,0) = \sin(8 \pi x), \quad 0 \le x \le 1,$$
+$$u(0,t) = \sin(-8 \pi t), \quad u(1,t) = \sin(-8 \pi (1-t)), \quad 0 \le t \le 1,$$
+
+dengan diskritisasi
+$$\Delta x = 0.025, \quad \Delta t = 0.02,$$
+
+dan solusi eksak 
+
+$$ u(x,t) = \sin(8 \pi(x-t))$$.
+
+## Metode FTBS
+
+Metode FTBS atau dikenal juga sebagai metode Courant-Isaacson-Rees memiliki persamaan beda hingga
+
+$$\frac{u_{j}^{n+1} - u_j^n}{\Delta t} + d\frac{u_j^n - u_{j-1}^n}{\Delta x} = 0$$.
+
+Jika dituliskan dalam *term* $u_j^{n+1}$, maka bentuknya menjadi
+$$u_j^{n+1} = (1-C)u_j^n + Cu_{j-1}^n, \quad C \equiv \frac{d\Delta t}{\Delta x}$$
+Metode ini membutuhkan syarat batas kiri.
+
+Kodenya adalah sebagai berikut.
+
+::: {.panel-tabset}
+
+### *Function file* `courant_i_r.m` - nama *file* harus sama dengan nama fungsi
+
+```octave
+function [x, t, u] = courant_i_r(d, f, lb, xb, xu, tb, tu, dx, dt)
+  x = xb : dx : xu;
+  t = tb : dt : tu;
+  nx = length(x);
+  nt = length(t);
+  u = zeros(nx, nt);
+
+  for j = 1 : nx
+    u(j, 1) = f(x(j));
+  endfor
+
+  for n = 1 : nt
+    u(1, n) = lb(t(n));
+  endfor
+
+  C = d * dt / dx;
+  for n = 1 : (nt - 1)
+    for j = 2 : nx
+      u(j, n+1) = (1-C) * u(j, n) + C * u(j-1, n);
+    endfor
+  endfor
+endfunction
+```
+:::
+
+### Contoh
+
+Perhatikan bahwa nilai $d = 1$.
+
+::: {.panel-tabset}
+
+### *Script file* `coba_courant_i_r.m` - nama *file* bebas
+
+```octave
+d = 1;
+f = @(x) sin(8*pi*x);
+lb = @(t) sin(-8*pi*t);
+xb = 0;
+xu = 1;
+tb = 0;
+tu = 1;
+dx = 0.025;
+dt = 0.02;
+
+[x, t, u] = courant_i_r(d, f, lb, xb, xu, tb, tu, dx, dt);
+
+sln = @(x,t) sin(8*pi*(x-t));
+
+for j = 1 : length(x)
+  for n = 1 : length(t)
+    y(j, n) = sln(x(j), t(n));
+  endfor
+endfor
+
+figure(1);
+hold on;
+mesh(x, t, u');
+xlabel('x');
+ylabel('t');
+zlabel('u');
+title("Solusi Metode Courant-Isaacson-Rees");
+
+figure(2);
+hold on;
+mesh(x, t, y');
+xlabel('x');
+ylabel('t');
+zlabel('u');
+title("Solusi Eksak")
+
+% solusi eksak pada t=1
+u1 = @(x) sln(x, 1);
+
+figure(3);
+hold on;
+fplot(u1, [0, 1], 'k');
+scatter(x, u(:, length(t)), 'r');
+legend("Eksak", "Metode Courant");
+title("Penampang pada t=1");
+```
+:::
+
+## Metode FTCS
+
+Metode FTCS dikenal juga sebagai metode Richardson memeiliki bentuk persamaan beda hingga
+
+$$\frac{u_j^{n+1} - u_j^n}{\Delta t} + d\frac{u_{j+1}^n - u_{j-1}^n}{2 \Delta x} = 0,$$
+
+atau dalam persamaan $u_j^{n+1}$ menjadi
+
+$$u_j^{n+1} = u_j^n + C(u_{j+1}^n - u_{j-1}^n), \quad C \equiv \frac{d \Delta t}{2\Delta x}$$.
+
+::: {.panel-tabset}
+
+### *Function file* `richardson.m` - nama *file* harus sama dengan nama fungsi
+
+```octave
+function [x, t, u] = richardson(d, f, lb, rb, xb, xu, tb, tu, dx, dt)
+  x = xb : dx : xu;
+  t = tb : dt : tu;
+  nx = length(x);
+  nt = length(t);
+  u = zeros(nx, nt);
+
+  for j = 1 : nx
+    u(j, 1) = f(x(j));
+  endfor
+
+  for n = 1 : nt
+    u(1, n) = lb(t(n));
+    u(nx, n) = rb(t(n));
+  endfor
+
+  C = (d * dt) / (2 * dx);
+  for n = 1 : (nt - 1)
+    for j = 2 : (nx - 1)
+      u(j, n+1) = u(j, n) - C * (u(j+1, n) - u(j-1, n));
+    endfor
+  endfor
+endfunction
+```
+:::
+
+Perlu dicatat bahwa metode ini tidak stabil, sehingga hasilnya berkemungkinan untuk tidak baik.
+
+### Contoh
+
+::: {.panel-tabset}
+
+### *Script file* `coba_richardson.m` - nama *file* bebas
+
+```octave
+d = 1;
+f = @(x) sin(8*pi*x);
+lb = @(t) sin(-8*pi*t);
+rb = @(t) sin(-8*pi*(1-t));
+xb = 0;
+xu = 1;
+tb = 0;
+tu = 1;
+dx = 0.025;
+dt = 0.02;
+
+[x, t, u] = richardson(d, f, lb, rb, xb, xu, tb, tu, dx, dt);
+
+sln = @(x,t) sin(8*pi*(x-t));
+
+for j = 1 : length(x)
+  for n = 1 : length(t)
+    y(j, n) = sln(x(j), t(n));
+  endfor
+endfor
+
+figure(1);
+hold on;
+mesh(x, t, u');
+xlabel('x');
+ylabel('t');
+zlabel('u');
+title("Solusi Metode Richardson");
+
+figure(2);
+hold on;
+mesh(x, t, y');
+xlabel('x');
+ylabel('t');
+zlabel('u');
+title("Solusi Eksak")
+
+% solusi eksak pada t=1
+u1 = @(x) sln(x, 1);
+
+figure(3);
+hold on;
+fplot(u1, [0, 1], 'k');
+scatter(x, u(:, length(t)), 'r');
+legend("Eksak", "Metode Richardson");
+title("Penampang pada t=1");
+```
+:::
+
+## Metode Lax
+
+Metode ini adalah perbaikan dari metode Richardson, mengganti $u_j^n$ dengan $\frac{1}{2} (u_{j+1}^n + u_{j-1}^n)$, sehingga persamaan bedanya menjadi
+
+$$u_j^{n+1} = \frac{1}{2} (u_{j+1}^n + u_{j-1}^n) + C(u_{j+1}^n - u_{j-1}^n), \quad C \equiv \frac{d \Delta t}{2 \Delta x}$$
+
+::: {.panel-tabset}
+
+### *Function file* `lax.m` - nama *file* harus sama dengan nama fungsi
+
+```octave
+function [x, t, u] = lax(d, f, lb, rb, xb, xu, tb, tu, dx, dt)
+  x = xb : dx : xu;
+  t = tb : dt : tu;
+  nx = length(x);
+  nt = length(t);
+  u = zeros(nx, nt);
+
+  for j = 1 : nx
+    u(j, 1) = f(x(j));
+  endfor
+
+  for n = 1 : nt
+    u(1, n) = lb(t(n));
+    u(nx, n) = rb(t(n));
+  endfor
+  
+  C = (d * dt) / (2 * dx);
+  for n = 1 : (nt - 1)
+    for j = 2 : (nx - 1)
+      u(j, n+1) = (u(j+1, n) + u(j-1, n)) / 2 - C * (u(j+1, n) - u(j-1, n));
+    endfor
+  endfor
+endfunction
+```
+:::
+
+### Contoh
+
+::: {.panel-tabset}
+
+### *Script file* `coba_lax.m` - nama *file* bebas
+
+```octave
+d = 1;
+f = @(x) sin(8*pi*x);
+lb = @(t) sin(-8*pi*t);
+rb = @(t) sin(-8*pi*(1-t));
+xb = 0;
+xu = 1;
+tb = 0;
+tu = 1;
+dx = 0.025;
+dt = 0.02;
+
+[x, t, u] = lax(d, f, lb, rb, xb, xu, tb, tu, dx, dt);
+
+sln = @(x,t) sin(8*pi*(x-t));
+
+for j = 1 : length(x)
+  for n = 1 : length(t)
+    y(j, n) = sln(x(j), t(n));
+  endfor
+endfor
+
+figure(1);
+hold on;
+mesh(x, t, u');
+xlabel('x');
+ylabel('t');
+zlabel('u');
+title("Solusi Metode Lax");
+
+figure(2);
+hold on;
+mesh(x, t, y');
+xlabel('x');
+ylabel('t');
+zlabel('u');
+title("Solusi Eksak");
+
+% solusi eksak pada t=1
+u1 = @(x) sln(x, 1);
+
+figure(3);
+hold on;
+fplot(u1, [0, 1], 'k');
+scatter(x, u(:, length(t)), 'r');
+legend("Eksak", "Metode Lax");
+title("Penampang pada t=1");
 ```
 :::

@@ -2,4 +2,42 @@
 
 Kembali ke [Praktikum Persamaan Diferensial Parsial](./prakpdp2026.qmd)
 
-**Latihan praktikum belum ada**
+## Soal
+
+Diberikan masalah persamaan *transport* (adveksi):
+
+$$
+\begin{aligned}
+u_t + 2u_x &= 0, \quad 0 < x < 2, \quad 0 < t < 3 \\
+u(x,0) &= e^{-x^2}, \quad 0 \le x \le 2 \\
+u(0,t) &= e^{-4t^2}, \quad 0 < t < 3 \\
+u(2,t) &= e^{-4\left(1-t\right)^2}, \quad 0 < t < 3
+\end{aligned}
+$$
+
+yang memiliki solusi eksak $u(x,t) = e^{-\left(x-2t\right)^2}$.
+
+Dengan $\Delta x = 0.2$ dan $\Delta t = 0.1$,
+
+a. Buat *file* pdf penjelasan, cocokkan PDP di atas dengan bentuk umum persamaan *transport*
+
+$$
+\begin{aligned}
+u_t + du_x &= 0, \quad \text{xb} < x < \text{xu}, \quad \text{tb} < t < \text{tu} \\
+u(x,\text{tb}) &= f(x), \quad \text{xb} \le x \le \text{xu} \\
+u(\text{xb},t) &= \text{lb}(t), \quad \text{tb} < t < \text{tu} \\
+u(\text{xu},t) &= \text{rb}(t), \quad \text{tb} < t < \text{tu}
+\end{aligned}
+$$
+
+yaitu tentukan nilai $d$, nilai $\text{xb}$, nilai $\text{xu}$, nilai $\text{tb}$, nilai $\text{tu}$, fungsi $f(x)$, fungsi $\text{lb}(t)$, dan fungsi $\text{rb}(t)$.
+
+b. Buatlah *script file* `soal_b.m` berisi penggunaan metode Courant-Isaacson-Rees untuk mengaproksimasi solusi dari PDP tersebut. Lampirkan gambar grafiknya (termasuk grafik solusi analitik) di *file* penjelasan (putar dulu grafiknya agar lebih terlihat). Seberapa mirip hasilnya dengan solusi analitik?
+
+c. Buatlah *script file* `soal_c.m` berisi penggunaan metode Richardson untuk mengaproksimasi solusi dari PDP tersebut. Lampirkan gambar grafiknya di *file* penjelasan (putar dulu grafiknya agar lebih terlihat). Apakah solusi numeriknya stabil?
+
+d. Buatlah *script file* `soal_d.m` berisi penggunaan metode Lax untuk mengaproksimasi solusi dari PDP tersebut. Lampirkan gambar grafiknya di *file* penjelasan (putar dulu grafiknya agar lebih terlihat). Seberapa mirip hasilnya dengan solusi analitik?
+
+e. Buatlah *script file* `soal_e.m` solusi pada tiap *step* waktu sebagai sebuah animasi untuk metode Courant-Isaacson-Rees hingga $t = 10$.
+
+f. Buatlah *script file* `bandingkan_metode.m` yang menunjukkan perbandingan ketiga metode. Tarik kesimpulan di *file* penjelasan.

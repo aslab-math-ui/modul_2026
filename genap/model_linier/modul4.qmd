@@ -1,0 +1,317 @@
+---
+title: "(Pertemuan 4) Model Building dalam Regresi Berganda"
+subtitle: "Polynomial, Interaction, dan Transformasi Variabel"
+author: "Tim Asisten Lab Departemen Matematika UI"
+image: "image3.jpg"
+format: html
+editor: visual
+date: 2026-04-13
+---
+
+Kembali ke [**Model Linier**](https://aslab-math-ui.github.io/modul-prak/modul/2026/genap/model_linier/molin2026genap.html)
+
+## Pendahuluan
+
+Hubungan antar variabel di dunia nyata jarang berbentuk garis lurus. Kadang ada lengkungan, kadang pengaruh satu variabel bergantung pada variabel lain, kadang variabelnya perlu ditransformasi dulu. Proses memilih dan membentuk variabel supaya model makin akurat inilah yang disebut **model building** (Mendenhall et al., 2011, Ch. 5).
+
+Di modul ini kita fokus ke: kapan perlu suku kuadratik, kapan perlu interaksi, kapan perlu transformasi log, dan bagaimana membandingkan model-model yang sudah dibuat.
+
+### Package yang Dipakai
+
+Sebelum mulai, kita load dulu package yang dibutuhkan:
+
+-   `tidyverse`: kumpulan package untuk data wrangling dan visualisasi. Di dalamnya ada `ggplot2` (bikin grafik), `dplyr` (manipulasi data), `tidyr` (reshape data), dan lain-lain. Kita pakai terutama untuk `ggplot2`.
+-   `patchwork`: package untuk menggabungkan beberapa plot `ggplot2` jadi satu tampilan berdampingan. Tanpa ini, kita harus pakai `par(mfrow=...)` yang lebih ribet dan tidak kompatibel dengan `ggplot2`.
+-   `knitr`: package untuk rendering dokumen R Markdown/Quarto. Kita pakai fungsi `kable()` dari sini untuk bikin tabel yang rapi.
+
+```{r}
+library(tidyverse)
+library(patchwork)
+```
+
+### Data
+
+Kita pakai dataset `mtcars` bawaan R, berisi data performa 32 model mobil. Yang mau diprediksi: `mpg` (konsumsi bahan bakar), menggunakan `wt` (berat), `hp` (tenaga mesin), dan `am` (transmisi: 0 = otomatis, 1 = manual).
+
+```{r}
+data(mtcars)
+df <- mtcars
+df$am <- factor(df$am, levels = c(0, 1), labels = c("Automatic", "Manual"))
+```
+
+## Pemisahan Data
+
+```{r}
+set.seed(2026)
+
+n_total  <- nrow(df)
+n_train  <- round(0.80 * n_total)
+idx      <- sample(1:n_total, n_train)
+
+data_train <- df[idx, ]
+data_test  <- df[-idx, ]
+```
+
+## Cek Grafik Sebelum Modeling
+
+Sebelum langsung bikin model macem-macem, intip dulu datanya lewat grafik. Tujuannya: **tahu bentuk model seperti apa yang cocok**.
+
+Dua hal yang perlu dicek:
+
+1.  Hubungan prediktor ke respon itu linear atau melengkung?
+2.  Apakah ada interaksi antar prediktor?
+
+### Scatterplot: Prediktor vs Respon
+
+Plot tiap prediktor numerik terhadap respon. Kita overlay dua garis: garis linear (hitam putus-putus) dan garis LOESS (merah). LOESS itu semacam garis "fleksibel" yang mengikuti pola data tanpa dipaksa lurus.
+
+```{r}
+p1 <- ggplot(data_train, aes(x = wt, y = mpg)) +
+  geom_point(color = "steelblue", size = 2.5, alpha = 0.8) +
+  geom_smooth(method = "lm",    se = FALSE, color = "black",  linetype = "dashed", linewidth = 0.8) +
+  geom_smooth(method = "loess", se = FALSE, color = "tomato", linewidth = 1) +
+  labs(title = "mpg vs wt", subtitle = "Hitam: linear | Merah: LOESS",
+       x = "wt", y = "mpg") +
+  theme_minimal()
+
+p2 <- ggplot(data_train, aes(x = hp, y = mpg)) +
+  geom_point(color = "steelblue", size = 2.5, alpha = 0.8) +
+  geom_smooth(method = "lm",    se = FALSE, color = "black",  linetype = "dashed", linewidth = 0.8) +
+  geom_smooth(method = "loess", se = FALSE, color = "tomato", linewidth = 1) +
+  labs(title = "mpg vs hp", subtitle = "Hitam: linear | Merah: LOESS",
+       x = "hp", y = "mpg") +
+  theme_minimal()
+
+p1 + p2
+```
+
+Kalau garis LOESS jauh melenceng dari garis linear, hubungannya tidak linear. Itu tanda kita perlu suku kuadratik atau transformasi log pada prediktor.
+
+### Cek Interaksi: Numerik x Kategorikal
+
+Sekarang kita cek apakah pengaruh satu prediktor terhadap respon berubah tergantung variabel lain. Caranya: plot prediktor numerik vs respon, pisahkan warnanya per kategori. Tiap kelompok di-fit garis linear sederhana.
+
+```{r}
+ggplot(data_train, aes(x = wt, y = mpg, color = am)) +
+  geom_point(size = 3, alpha = 0.7) +
+  geom_smooth(method = "lm", se = FALSE, linewidth = 1.2) +
+  scale_color_manual(values = c("Automatic" = "steelblue", "Manual" = "tomato")) +
+  labs(title = "Cek Interaksi: wt x am",
+       subtitle = "Sejajar = tidak ada interaksi, beda slope = ada interaksi",
+       x = "Berat (1000 lbs)", y = "MPG", color = "Transmisi") +
+  theme_minimal()
+```
+
+Kalau garisnya kira-kira sejajar, pengaruh `wt` terhadap `mpg` sama untuk kedua jenis transmisi, jadi interaksi tidak perlu. Kalau slopenya jelas beda (atau bahkan menyilang), itu tanda kita perlu suku interaksi `wt:am` di model.
+
+### Cek Interaksi: Numerik x Numerik
+
+Kalau dua-duanya numerik, kita tidak bisa langsung pakai warna karena bukan kategori. Triknya: potong salah satu variabel jadi beberapa kelompok pakai `cut()`, lalu perlakukan kelompok itu seperti kategori.
+
+```{r}
+data_train$hp_group <- cut(data_train$hp,
+                           breaks = 3,
+                           labels = c("HP Rendah", "HP Sedang", "HP Tinggi"))
+
+ggplot(data_train, aes(x = wt, y = mpg, color = hp_group)) +
+  geom_point(size = 3, alpha = 0.7) +
+  geom_smooth(method = "lm", se = FALSE, linewidth = 1.2) +
+  labs(title = "Cek Interaksi: wt x hp",
+       subtitle = "Sejajar = tidak ada interaksi, beda slope = ada interaksi",
+       x = "Berat (1000 lbs)", y = "MPG", color = "Kelompok HP") +
+  theme_minimal()
+```
+
+Cara bacanya sama: kalau garis per kelompok HP sejajar, interaksi `wt:hp` tidak diperlukan. Kalau slopenya beda (misalnya di HP tinggi garisnya lebih curam), masukkan suku interaksi `wt:hp` ke model.
+
+### Ringkasan: Baca Grafik, Tentukan Model
+
+| Yang terlihat di grafik | Apa yang perlu dilakukan |
+|------------------------------------|------------------------------------|
+| Scatterplot melengkung (LOESS jauh dari linear) | Tambah suku kuadratik $x^2$ atau pakai $\log(x)$ |
+| Garis per kategori tidak sejajar | Tambah suku interaksi $x_1 \cdot x_2$ |
+
+Diagnostik lain seperti residual plot, Q-Q plot residu, dan scale-location plot akan dibahas lebih dalam di praktikum 8 (Residual Analysis).
+
+## Membangun Model
+
+### 1. First-Order Model (Baseline)
+
+Mulai dari yang paling sederhana: semua prediktor masuk secara linear, tanpa interaksi dan tanpa transformasi. Model ini jadi patokan (Mendenhall et al., 2011, Sec. 4.3).
+
+$$E(y) = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k$$
+
+```{r}
+model_1 <- lm(mpg ~ wt + hp + am, data = data_train)
+summary(model_1)
+```
+
+### 2. Menambahkan Suku Interaksi
+
+Kadang pengaruh suatu variabel terhadap respon bergantung pada variabel lain. Misalnya, pengaruh berat mobil (`wt`) terhadap `mpg` bisa berbeda antara mobil otomatis dan manual. Kalau begini, garisnya tidak sejajar, slopenya beda (Mendenhall et al., 2011, Sec. 4.10, 5.7).
+
+$$E(y) = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_1 x_2$$
+
+Koefisien interaksi $\beta_3$ artinya: perubahan slope $x_1$ untuk setiap perubahan satu unit $x_2$.
+
+Di R, interaksi ditulis pakai `:` (interaksi saja) atau `*` (efek utama + interaksi).
+
+```{r}
+model_2 <- lm(mpg ~ wt * am + hp, data = data_train)
+summary(model_2)
+```
+
+```{r}
+data_train$pred_m2 <- predict(model_2)
+
+ggplot(data_train, aes(x = wt, color = am)) +
+  geom_point(aes(y = mpg), size = 3, alpha = 0.7) +
+  geom_line(aes(y = pred_m2), linewidth = 1.2) +
+  scale_color_manual(values = c("Automatic" = "steelblue", "Manual" = "tomato")) +
+  labs(title = "Model dengan Interaksi wt x am",
+       x = "Berat (1000 lbs)", y = "MPG", color = "Transmisi") +
+  theme_minimal()
+```
+
+Perhatikan plotnya: dua garis untuk Automatic dan Manual punya kemiringan (slope) yang berbeda. Itu efek dari interaksi. Tanpa interaksi, kedua garis akan sejajar karena pengaruh `wt` dianggap sama untuk semua jenis transmisi. Dengan interaksi, model mengizinkan pengaruh `wt` terhadap `mpg` berbeda tergantung tipe transmisi.
+
+Secara konkret: kalau garis Manual turun lebih curam dari Automatic, artinya setiap penambahan berat pada mobil manual "lebih mahal" dari segi konsumsi bahan bakar dibanding mobil otomatis. Sebaliknya, kalau garis Manual lebih landai, mobil manual lebih tahan terhadap penambahan berat.
+
+Koefisien `wt:amManual` di output `summary()` adalah perbedaan slope `wt` antara mobil manual dan otomatis. Jadi slope `wt` untuk manual = $\hat\beta_{wt} + \hat\beta_{wt:amManual}$, sedangkan slope `wt` untuk otomatis cukup $\hat\beta_{wt}$ saja.
+
+### 3. Suku Kuadratik (Polynomial)
+
+Kalau hubungan prediktor-respon melengkung, tambahkan suku $x^2$ supaya model bisa mengikuti kurva. Mendenhall et al. (2011, Sec. 5.3) menjelaskan bahwa model polinomial orde-$p$ punya $(p-1)$ titik balik, jadi model kuadratik punya satu lengkungan, kubik punya dua, dst.
+
+$$E(y) = \beta_0 + \beta_1 x + \beta_2 x^2$$
+
+Di R, suku kuadratik **wajib** dibungkus `I()`. Tanpa `I()`, operator `^` punya arti lain dalam sintaks formula R.
+
+```{r}
+model_3 <- lm(mpg ~ wt + hp + I(hp^2) + am, data = data_train)
+summary(model_3)
+```
+
+Visualisasi linear vs kuadratik:
+
+```{r}
+hp_seq <- data.frame(
+  hp = seq(min(data_train$hp), max(data_train$hp), length.out = 200),
+  wt = mean(data_train$wt),
+  am = factor("Automatic", levels = c("Automatic", "Manual"))
+)
+
+hp_seq$pred_linear    <- predict(model_1, newdata = hp_seq)
+hp_seq$pred_quadratic <- predict(model_3, newdata = hp_seq)
+
+ggplot(data_train, aes(x = hp, y = mpg)) +
+  geom_point(color = "gray40", size = 3, alpha = 0.8) +
+  geom_line(data = hp_seq, aes(y = pred_linear,    color = "Linear"),    linewidth = 1.2) +
+  geom_line(data = hp_seq, aes(y = pred_quadratic, color = "Kuadratik"), linewidth = 1.2) +
+  scale_color_manual(values = c("Linear" = "steelblue", "Kuadratik" = "tomato")) +
+  labs(title = "Linear vs Kuadratik untuk HP",
+       x = "Horsepower", y = "MPG", color = "Model") +
+  theme_minimal()
+```
+
+### 4. Transformasi Log pada Prediktor
+
+Kalau prediktor sangat condong ke kanan (right-skewed), atau hubungannya dengan respon lebih "masuk akal" dalam skala log, langsung tulis `log()` di formula.
+
+```{r}
+model_4 <- lm(mpg ~ wt + log(hp) + am, data = data_train)
+summary(model_4)
+```
+
+Interpretasi: karena prediktornya `log(hp)`, kenaikan `hp` sebesar 1% diestimasi mengubah `mpg` sebesar $\hat\beta_{\log(hp)} / 100$ satuan.
+
+### 5. Transformasi Log pada Respon (Multiplicative Model)
+
+Kadang yang bermasalah bukan prediktornya, tapi responnya. Kalau data punya sifat di mana perubahan respon lebih masuk akal dalam bentuk persentase daripada angka absolut (misalnya gaji, harga), model multiplikatif lebih tepat. Mendenhall et al. (2011, Sec. 4.12, 8.4) menjelaskan bahwa model ini ditulis:
+
+$$y = [E(y)] \cdot \varepsilon \quad \Longrightarrow \quad \ln(y) = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \varepsilon$$
+
+```{r}
+model_5 <- lm(log(mpg) ~ wt + hp + am, data = data_train)
+summary(model_5)
+```
+
+Interpretasi koefisien: kenaikan 1 satuan $x_j$ mengubah $y$ sebesar faktor $e^{\hat\beta_j}$, atau dalam persen: $(e^{\hat\beta_j} - 1) \times 100\%$.
+
+```{r}
+beta_wt <- coef(model_5)["wt"]
+cat("Koefisien wt:", round(beta_wt, 4), "\n")
+cat("Artinya: +1 unit wt -> mpg berubah", round((exp(beta_wt) - 1) * 100, 2), "%\n")
+```
+
+**Penting:** $R^2$ model ini tidak bisa langsung dibandingkan dengan model 1-4 karena responnya beda skala. Kalau mau prediksi ke skala `mpg` asli, balikkan pakai `exp()`. Kapan sebaiknya pakai transformasi log pada respon akan dibahas lebih lanjut di praktikum 8 (Residual Analysis), di mana kita akan belajar mendeteksi heteroskedastisitas dari residual plot.
+
+### 6. Complete Second-Order Model
+
+Versi paling lengkap: semua suku linear, kuadratik, dan interaksi antar prediktor numerik digabung jadi satu (Mendenhall et al., 2011, Sec. 5.5):
+
+$$E(y) = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_1 x_2 + \beta_4 x_1^2 + \beta_5 x_2^2$$
+
+```{r}
+model_6 <- lm(mpg ~ (wt + hp)^2 + I(wt^2) + I(hp^2) + am, data = data_train)
+summary(model_6)
+```
+
+## Membandingkan Model dengan Nested F-Test
+
+Setelah punya beberapa model, kita perlu cara formal untuk menentukan mana yang lebih baik. Kalau dua model bersifat *nested* (satu model merupakan versi lebih kecil dari yang lain), pakai `anova()` untuk menguji apakah suku tambahan signifikan (Mendenhall et al., 2011, Sec. 4.13).
+
+$$H_0: \beta_{g+1} = \beta_{g+2} = \cdots = \beta_k = 0$$
+
+$$F = \frac{(SSE_R - SSE_C) / (k - g)}{MSE_C}$$
+
+Contoh: apakah suku kuadratik `I(hp^2)` yang ditambahkan di model 3 benar-benar membantu dibanding model 1?
+
+```{r}
+anova(model_1, model_3)
+```
+
+Dan apakah suku interaksi `wt:am` di model 2 signifikan?
+
+```{r}
+anova(model_1, model_2)
+```
+
+Kalau p-value $< 0.05$, suku tambahannya berguna, pakai model yang lebih kompleks. Kalau tidak signifikan, pilih model yang lebih sederhana (prinsip *parsimony*; Mendenhall et al., 2011, Sec. 4.13).
+
+Metode perbandingan model lainnya seperti AIC, BIC, dan adjusted $R^2$ akan dibahas di praktikum 6 (Variable Selection).
+
+## Referensi Sintaks
+
+```{r}
+#| eval: false
+
+# First-order
+lm(y ~ x1 + x2, data = df)
+
+# Interaksi
+lm(y ~ x1 * x2, data = df)             # efek utama + interaksi
+lm(y ~ (x1 + x2 + x3)^2, data = df)    # semua interaksi dua arah
+
+# Kuadratik (WAJIB pakai I())
+lm(y ~ x + I(x^2), data = df)
+lm(y ~ poly(x, 3), data = df)           # alternatif polinomial
+
+# Log prediktor
+lm(y ~ log(x), data = df)
+
+# Log respon
+lm(log(y) ~ x1 + x2, data = df)        # prediksi balik: exp(predict(...))
+
+# Complete second-order
+lm(y ~ (x1 + x2)^2 + I(x1^2) + I(x2^2), data = df)
+
+# Nested F-test
+anova(model_reduced, model_complete)
+```
+
+## Referensi
+
+Mendenhall, W., Sincich, T. (2011). *A Second Course in Statistics: Regression Analysis* (7th ed.). Prentice Hall.
+
+Materi modul ini mengacu pada beberapa bagian dari buku di atas: interaction model (Sec. 4.10), multiplicative model (Sec. 4.12), nested model F-test dan prinsip parsimony (Sec. 4.13), polynomial models (Sec. 5.3), complete second-order model (Sec. 5.5), serta models with quantitative & qualitative variables (Sec. 5.7).

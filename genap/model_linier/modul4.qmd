@@ -14,15 +14,15 @@ Kembali ke [**Model Linier**](https://aslab-math-ui.github.io/modul-prak/modul/2
 
 Hubungan antar variabel di dunia nyata jarang berbentuk garis lurus. Kadang ada lengkungan, kadang pengaruh satu variabel bergantung pada variabel lain, kadang variabelnya perlu ditransformasi dulu. Proses memilih dan membentuk variabel supaya model makin akurat inilah yang disebut **model building** (Mendenhall et al., 2011, Ch. 5).
 
-Di modul ini kita fokus ke: kapan perlu suku kuadratik, kapan perlu interaksi, kapan perlu transformasi log, dan bagaimana membandingkan model-model yang sudah dibuat.
+Di modul ini kita akan belajar: menambahkan prediktor baru, suku interaksi, suku kuadratik, transformasi logaritma, dan membandingkan model.
 
 ### Package yang Dipakai
 
 Sebelum mulai, kita load dulu package yang dibutuhkan:
 
 -   `tidyverse`: kumpulan package untuk data wrangling dan visualisasi. Di dalamnya ada `ggplot2` (bikin grafik), `dplyr` (manipulasi data), `tidyr` (reshape data), dan lain-lain. Kita pakai terutama untuk `ggplot2`.
+
 -   `patchwork`: package untuk menggabungkan beberapa plot `ggplot2` jadi satu tampilan berdampingan. Tanpa ini, kita harus pakai `par(mfrow=...)` yang lebih ribet dan tidak kompatibel dengan `ggplot2`.
--   `knitr`: package untuk rendering dokumen R Markdown/Quarto. Kita pakai fungsi `kable()` dari sini untuk bikin tabel yang rapi.
 
 ```{r}
 library(tidyverse)
@@ -54,16 +54,14 @@ data_test  <- df[-idx, ]
 
 ## Cek Grafik Sebelum Modeling
 
-Sebelum langsung bikin model macem-macem, intip dulu datanya lewat grafik. Tujuannya: **tahu bentuk model seperti apa yang cocok**.
+Sebelum langsung bikin model macem-macem, intip dulu datanya lewat grafik. Tujuannya: **tahu transformasi apa yang dibutuhkan**.
 
-Dua hal yang perlu dicek:
+Dua pertanyaan utama:
 
-1.  Hubungan prediktor ke respon itu linear atau melengkung?
-2.  Apakah ada interaksi antar prediktor?
+1.  Hubungan prediktor ke respon itu linear atau melengkung? Kalau melengkung, coba suku kuadratik atau log prediktor.
+2.  Distribusi respon/residu bermasalah (skewed, variansi tidak merata)? Kalau iya, coba log pada respon.
 
 ### Scatterplot: Prediktor vs Respon
-
-Plot tiap prediktor numerik terhadap respon. Kita overlay dua garis: garis linear (hitam putus-putus) dan garis LOESS (merah). LOESS itu semacam garis "fleksibel" yang mengikuti pola data tanpa dipaksa lurus.
 
 ```{r}
 p1 <- ggplot(data_train, aes(x = wt, y = mpg)) +
@@ -85,11 +83,123 @@ p2 <- ggplot(data_train, aes(x = hp, y = mpg)) +
 p1 + p2
 ```
 
-Kalau garis LOESS jauh melenceng dari garis linear, hubungannya tidak linear. Itu tanda kita perlu suku kuadratik atau transformasi log pada prediktor.
+Kalau garis LOESS (merah) jauh melenceng dari garis linear (hitam putus-putus), hubungannya tidak linear. Pertimbangkan suku kuadratik atau log pada prediktor.
 
-### Cek Interaksi: Numerik x Kategorikal
+### Distribusi Respon: Perlu Log atau Tidak?
 
-Sekarang kita cek apakah pengaruh satu prediktor terhadap respon berubah tergantung variabel lain. Caranya: plot prediktor numerik vs respon, pisahkan warnanya per kategori. Tiap kelompok di-fit garis linear sederhana.
+Scatterplot di atas menjawab pertanyaan soal prediktor. Sekarang kita cek variabel responnya (`mpg`): apakah distribusinya normal atau condong ke satu sisi (skewed)? Kalau condong ke kanan, itu sinyal bahwa transformasi `log(y)` bisa membantu (Mendenhall et al., 2011, Sec. 8.4).
+
+Kita bandingkan distribusi `mpg` asli vs `log(mpg)`:
+
+```{r}
+p3 <- ggplot(data_train, aes(x = mpg)) +
+  geom_histogram(aes(y = after_stat(density)), bins = 10,
+                 fill = "steelblue", color = "white", alpha = 0.8) +
+  geom_density(color = "tomato", linewidth = 1) +
+  labs(title = "Distribusi mpg (skala asli)", x = "mpg", y = "Density") +
+  theme_minimal()
+
+p4 <- ggplot(data_train, aes(x = log(mpg))) +
+  geom_histogram(aes(y = after_stat(density)), bins = 10,
+                 fill = "darkgreen", color = "white", alpha = 0.8) +
+  geom_density(color = "tomato", linewidth = 1) +
+  labs(title = "Distribusi log(mpg)", x = "log(mpg)", y = "Density") +
+  theme_minimal()
+
+p3 + p4
+```
+
+Kalau distribusi asli jelas condong ke kanan tapi versi log-nya lebih simetris (bentuk bel), itu petunjuk kuat untuk pakai `log(y)` sebagai respon.
+
+Bisa juga dicek lewat Q-Q plot. Prinsipnya: kalau titik-titik mengikuti garis diagonal, distribusinya mendekati normal.
+
+```{r}
+p5 <- ggplot(data_train, aes(sample = mpg)) +
+  stat_qq(color = "steelblue", size = 2) +
+  stat_qq_line(color = "tomato", linewidth = 1) +
+  labs(title = "Q-Q Plot: mpg (skala asli)") +
+  theme_minimal()
+
+p6 <- ggplot(data_train, aes(sample = log(mpg))) +
+  stat_qq(color = "darkgreen", size = 2) +
+  stat_qq_line(color = "tomato", linewidth = 1) +
+  labs(title = "Q-Q Plot: log(mpg)") +
+  theme_minimal()
+
+p5 + p6
+```
+
+Bandingkan kedua Q-Q plot: pakai skala yang titik-titiknya lebih rapat ke garis diagonal. Kalau `log(mpg)` lebih rapat, berarti transformasi log layak dicoba.
+
+### Residual Plot: Model Awal
+
+Setelah fit model pertama, cek residunya. Ini grafik paling penting karena bisa menangkap masalah yang tidak terlihat di scatterplot biasa.
+
+```{r}
+model_cek <- lm(mpg ~ wt + hp, data = data_train)
+
+data_cek <- data.frame(
+  fitted   = fitted(model_cek),
+  residual = residuals(model_cek)
+)
+
+p7 <- ggplot(data_cek, aes(x = fitted, y = residual)) +
+  geom_point(color = "steelblue", size = 2.5, alpha = 0.8) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
+  geom_smooth(method = "loess", se = FALSE, color = "tomato", linewidth = 1) +
+  labs(title = "Residual vs Fitted",
+       subtitle = "Idealnya: titik tersebar acak di sekitar garis nol",
+       x = "Fitted values", y = "Residual") +
+  theme_minimal()
+
+p8 <- ggplot(data_cek, aes(sample = residual)) +
+  stat_qq(color = "steelblue", size = 2) +
+  stat_qq_line(color = "tomato", linewidth = 1) +
+  labs(title = "Q-Q Plot Residu",
+       subtitle = "Idealnya: titik mengikuti garis diagonal") +
+  theme_minimal()
+
+p7 + p8
+```
+
+Cara baca:
+
+-   **Residual vs Fitted**: Pola melengkung berarti ada non-linearitas yang belum tertangkap. Bentuk "corong" (makin menyebar) menandakan heteroskedastisitas.
+-   **Q-Q Plot residu**: Titik melenceng dari garis berarti residu tidak normal.
+
+### Scale-Location Plot: Variansi Konstan atau Tidak?
+
+Plot ini lebih fokus untuk mendeteksi heteroskedastisitas. Sumbu-y-nya adalah $\sqrt{|\text{residual}|}$, jadi kita bisa lihat apakah "sebaran" residu berubah-ubah seiring nilai prediksi naik.
+
+```{r}
+data_cek$sqrt_abs_resid <- sqrt(abs(residuals(model_cek)))
+
+ggplot(data_cek, aes(x = fitted, y = sqrt_abs_resid)) +
+  geom_point(color = "steelblue", size = 2.5, alpha = 0.8) +
+  geom_smooth(method = "loess", se = FALSE, color = "tomato", linewidth = 1) +
+  labs(title = "Scale-Location Plot",
+       subtitle = "Idealnya: garis merah datar (variansi konstan)",
+       x = "Fitted values", y = expression(sqrt("|Residual|"))) +
+  theme_minimal()
+```
+
+Kalau garis merah naik atau turun, variansi tidak konstan. Ini sinyal kuat untuk coba `log(y)` sebagai respon (Mendenhall et al., 2011, Sec. 8.4, Table 8.3).
+
+### Ringkasan Diagnostik
+
+| Yang terlihat di grafik | Solusi |
+|------------------------------------|------------------------------------|
+| Scatterplot melengkung | Tambah suku kuadratik $x^2$ atau pakai $\log(x)$ |
+| Distribusi respon skewed ke kanan | Coba $\log(y)$ sebagai respon |
+| Residual vs Fitted berpola | Tambah suku kuadratik atau transformasi prediktor |
+| Variansi residu tidak konstan | Coba $\log(y)$ sebagai respon |
+| Garis per kategori tidak sejajar | Tambah suku interaksi $x_1 \cdot x_2$ |
+
+### Cek Interaksi: Apakah Pengaruh Prediktor Bergantung pada Variabel Lain?
+
+Grafik-grafik di atas fokus ke bentuk hubungan (linear/melengkung) dan distribusi respon. Tapi ada satu hal lagi yang perlu dicek: **apakah ada interaksi antar prediktor?**
+
+Cara paling gampang: plot prediktor numerik vs respon, lalu pisahkan warnanya berdasarkan variabel kategorikal. Kalau garisnya kira-kira sejajar, interaksi kemungkinan tidak ada. Kalau garisnya menyilang atau kemiringannya jelas beda, itu tanda ada interaksi.
 
 ```{r}
 ggplot(data_train, aes(x = wt, y = mpg, color = am)) +
@@ -97,16 +207,16 @@ ggplot(data_train, aes(x = wt, y = mpg, color = am)) +
   geom_smooth(method = "lm", se = FALSE, linewidth = 1.2) +
   scale_color_manual(values = c("Automatic" = "steelblue", "Manual" = "tomato")) +
   labs(title = "Cek Interaksi: wt x am",
-       subtitle = "Sejajar = tidak ada interaksi, beda slope = ada interaksi",
+       subtitle = "Sejajar = tidak ada interaksi, menyilang/beda slope = ada interaksi",
        x = "Berat (1000 lbs)", y = "MPG", color = "Transmisi") +
   theme_minimal()
 ```
 
-Kalau garisnya kira-kira sejajar, pengaruh `wt` terhadap `mpg` sama untuk kedua jenis transmisi, jadi interaksi tidak perlu. Kalau slopenya jelas beda (atau bahkan menyilang), itu tanda kita perlu suku interaksi `wt:am` di model.
+Plot ini belum pakai model apapun, murni dari data mentah. Kita cuma fit garis linear sederhana per kategori `am` untuk melihat polanya. Kalau dari sini slopenya sudah kelihatan beda, itu alasan untuk memasukkan suku interaksi `wt:am` ke dalam model nanti.
 
-### Cek Interaksi: Numerik x Numerik
+**Kalau dua-duanya numerik bagaimana?**
 
-Kalau dua-duanya numerik, kita tidak bisa langsung pakai warna karena bukan kategori. Triknya: potong salah satu variabel jadi beberapa kelompok pakai `cut()`, lalu perlakukan kelompok itu seperti kategori.
+Untuk cek interaksi antara dua variabel numerik (misalnya `wt` dan `hp`), caranya agak beda. Kita tidak bisa langsung pakai warna karena `hp` bukan kategori. Triknya: potong salah satu variabel jadi beberapa kelompok pakai `cut()`, lalu perlakukan kelompok itu seperti kategori.
 
 ```{r}
 data_train$hp_group <- cut(data_train$hp,
@@ -122,16 +232,7 @@ ggplot(data_train, aes(x = wt, y = mpg, color = hp_group)) +
   theme_minimal()
 ```
 
-Cara bacanya sama: kalau garis per kelompok HP sejajar, interaksi `wt:hp` tidak diperlukan. Kalau slopenya beda (misalnya di HP tinggi garisnya lebih curam), masukkan suku interaksi `wt:hp` ke model.
-
-### Ringkasan: Baca Grafik, Tentukan Model
-
-| Yang terlihat di grafik | Apa yang perlu dilakukan |
-|------------------------------------|------------------------------------|
-| Scatterplot melengkung (LOESS jauh dari linear) | Tambah suku kuadratik $x^2$ atau pakai $\log(x)$ |
-| Garis per kategori tidak sejajar | Tambah suku interaksi $x_1 \cdot x_2$ |
-
-Diagnostik lain seperti residual plot, Q-Q plot residu, dan scale-location plot akan dibahas lebih dalam di praktikum 8 (Residual Analysis).
+Logikanya sama: kalau garis per kelompok HP kira-kira sejajar, pengaruh `wt` terhadap `mpg` tidak tergantung level `hp`. Kalau slopenya beda (misalnya di HP tinggi garisnya lebih curam), itu tanda ada interaksi `wt:hp` yang perlu dimasukkan ke model.
 
 ## Membangun Model
 
@@ -227,7 +328,7 @@ Interpretasi: karena prediktornya `log(hp)`, kenaikan `hp` sebesar 1% diestimasi
 
 ### 5. Transformasi Log pada Respon (Multiplicative Model)
 
-Kadang yang bermasalah bukan prediktornya, tapi responnya. Kalau data punya sifat di mana perubahan respon lebih masuk akal dalam bentuk persentase daripada angka absolut (misalnya gaji, harga), model multiplikatif lebih tepat. Mendenhall et al. (2011, Sec. 4.12, 8.4) menjelaskan bahwa model ini ditulis:
+Kalau residu punya variansi tidak merata (heteroskedastik), biasanya terlihat sebagai pola "corong" di residual plot, coba transformasi log pada respon. Mendenhall et al. (2011, Sec. 4.12, 8.4) menjelaskan bahwa ini ekuivalen dengan model multiplikatif:
 
 $$y = [E(y)] \cdot \varepsilon \quad \Longrightarrow \quad \ln(y) = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \varepsilon$$
 
@@ -244,7 +345,7 @@ cat("Koefisien wt:", round(beta_wt, 4), "\n")
 cat("Artinya: +1 unit wt -> mpg berubah", round((exp(beta_wt) - 1) * 100, 2), "%\n")
 ```
 
-**Penting:** $R^2$ model ini tidak bisa langsung dibandingkan dengan model 1-4 karena responnya beda skala. Kalau mau prediksi ke skala `mpg` asli, balikkan pakai `exp()`. Kapan sebaiknya pakai transformasi log pada respon akan dibahas lebih lanjut di praktikum 8 (Residual Analysis), di mana kita akan belajar mendeteksi heteroskedastisitas dari residual plot.
+**Penting:** $R^2$ model ini tidak bisa langsung dibandingkan dengan model 1–4 karena responnya beda skala. Kalau mau prediksi ke skala `mpg` asli, balikkan pakai `exp()`.
 
 ### 6. Complete Second-Order Model
 
@@ -257,21 +358,19 @@ model_6 <- lm(mpg ~ (wt + hp)^2 + I(wt^2) + I(hp^2) + am, data = data_train)
 summary(model_6)
 ```
 
-## Membandingkan Model dengan Nested F-Test
+## Membandingkan Model
 
-Setelah punya beberapa model, kita perlu cara formal untuk menentukan mana yang lebih baik. Kalau dua model bersifat *nested* (satu model merupakan versi lebih kecil dari yang lain), pakai `anova()` untuk menguji apakah suku tambahan signifikan (Mendenhall et al., 2011, Sec. 4.13).
+### Nested Model F-Test
+
+Kalau dua model bersifat *nested* (satu model merupakan versi lebih kecil dari yang lain), pakai `anova()` untuk menguji apakah suku tambahan signifikan (Mendenhall et al., 2011, Sec. 4.13).
 
 $$H_0: \beta_{g+1} = \beta_{g+2} = \cdots = \beta_k = 0$$
 
 $$F = \frac{(SSE_R - SSE_C) / (k - g)}{MSE_C}$$
 
-Contoh: apakah suku kuadratik `I(hp^2)` yang ditambahkan di model 3 benar-benar membantu dibanding model 1?
-
 ```{r}
 anova(model_1, model_3)
 ```
-
-Dan apakah suku interaksi `wt:am` di model 2 signifikan?
 
 ```{r}
 anova(model_1, model_2)
@@ -279,7 +378,44 @@ anova(model_1, model_2)
 
 Kalau p-value $< 0.05$, suku tambahannya berguna, pakai model yang lebih kompleks. Kalau tidak signifikan, pilih model yang lebih sederhana (prinsip *parsimony*; Mendenhall et al., 2011, Sec. 4.13).
 
-Metode perbandingan model lainnya seperti AIC, BIC, dan adjusted $R^2$ akan dibahas di praktikum 6 (Variable Selection).
+### AIC dan BIC
+
+Untuk membandingkan banyak model sekaligus (termasuk yang tidak nested), pakai AIC/BIC. Semakin kecil nilainya, semakin baik modelnya.
+
+```{r}
+AIC(model_1, model_2, model_3, model_4, model_6)
+```
+
+```{r}
+BIC(model_1, model_2, model_3, model_4, model_6)
+```
+
+## Evaluasi pada Data Test
+
+Terakhir, cek performa semua model di data yang belum pernah dilihat.
+
+```{r}
+hitung_metrik <- function(model, data_uji, log_respon = FALSE) {
+  pred   <- if (log_respon) exp(predict(model, newdata = data_uji)) else predict(model, newdata = data_uji)
+  aktual <- data_uji$mpg
+  rmse   <- sqrt(mean((aktual - pred)^2))
+  r2     <- 1 - sum((aktual - pred)^2) / sum((aktual - mean(aktual))^2)
+  c(RMSE = round(rmse, 4), R2_test = round(r2, 4))
+}
+
+hasil <- rbind(
+  "Model 1: First-order"   = hitung_metrik(model_1, data_test),
+  "Model 2: +Interaksi"    = hitung_metrik(model_2, data_test),
+  "Model 3: +Kuadratik hp" = hitung_metrik(model_3, data_test),
+  "Model 4: log(hp)"       = hitung_metrik(model_4, data_test),
+  "Model 5: log(mpg)*"     = hitung_metrik(model_5, data_test, log_respon = TRUE),
+  "Model 6: Second-order"  = hitung_metrik(model_6, data_test)
+)
+
+knitr::kable(hasil, caption = "* prediksi ditransformasi balik dengan exp()")
+```
+
+RMSE yang lebih kecil dan R² test yang lebih besar menandakan model yang lebih baik di data baru. Kalau RMSE test jauh lebih besar dari train, kemungkinan overfitting.
 
 ## Referensi Sintaks
 
@@ -306,12 +442,14 @@ lm(log(y) ~ x1 + x2, data = df)        # prediksi balik: exp(predict(...))
 # Complete second-order
 lm(y ~ (x1 + x2)^2 + I(x1^2) + I(x2^2), data = df)
 
-# Nested F-test
-anova(model_reduced, model_complete)
+# Perbandingan model
+anova(model_reduced, model_complete)     # nested F-test
+AIC(model_a, model_b)
+BIC(model_a, model_b)
 ```
 
 ## Referensi
 
 Mendenhall, W., Sincich, T. (2011). *A Second Course in Statistics: Regression Analysis* (7th ed.). Prentice Hall.
 
-Materi modul ini mengacu pada beberapa bagian dari buku di atas: interaction model (Sec. 4.10), multiplicative model (Sec. 4.12), nested model F-test dan prinsip parsimony (Sec. 4.13), polynomial models (Sec. 5.3), complete second-order model (Sec. 5.5), serta models with quantitative & qualitative variables (Sec. 5.7).
+Materi modul ini mengacu pada beberapa bagian dari buku di atas: interaction model dan multiplicative model (Sec. 4.10 dan 4.12), nested model F-test dan prinsip parsimony (Sec. 4.13), polynomial models dan complete second-order model (Sec. 5.3 dan 5.5), models with quantitative & qualitative variables (Sec. 5.7), serta variance-stabilizing transformations seperti log dan sqrt (Sec. 8.4).

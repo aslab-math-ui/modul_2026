@@ -12,7 +12,7 @@ listing:
       - "date asc"
       - "title asc"
   - id: tugas
-    contents: "tugas*.qmd"
+    contents: "tugas*.ipynb"
     type: grid
     fields: [image, title, date]
     sort:

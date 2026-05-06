@@ -8,7 +8,7 @@ format:
     toc: true
 ---
 
-Kembali ke [Praktikum Persamaan Diferensial Parsial](./pdp2025genap.qmd)
+Kembali ke [Praktikum Persamaan Diferensial Parsial](./prakpdp2026.qmd)
 
 # Persamaan Gelombang
 

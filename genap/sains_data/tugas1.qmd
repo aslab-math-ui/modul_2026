@@ -76,7 +76,7 @@ Kembali ke [Sains Data](./saindat2026genap.qmd)
 
 # Soal
 
-Dataset yang digunakan adalah dataset harga properti rumah, `house_prices.csv`, yang bisa di-*download* dari tautan berikut (gunakan Ctrl + S jika tidak otomatis tersimpan):
+Dataset yang digunakan adalah dataset harga properti rumah, `house_prices.csv`, yang bisa di-*download* dari tautan berikut:
 
 <a href="https://raw.githubusercontent.com/aslab-math-ui/asset/main/sains_data/datasets/house_prices.csv"
    download="house_prices.csv"
@@ -88,7 +88,7 @@ Di dataset ini, fitur target yang ingin diprediksi adalah harga properti rumah (
 
 Jika ingin melihat deskripsi lebih rinci mengenai tiap fitur pada dataset, silahkan buka file `.txt` berikut:
 
-<a href="./house_prices_data_description.qmd" class="btn">Deskripsi Fitur</a>
+<a href="./tugas1/house_prices_data_description.qmd" class="btn">Deskripsi Fitur</a>
 
 Lakukan *end-to-end machine learning*, atau lebih tepatnya *end-to-end regression*, yang meliputi:
 

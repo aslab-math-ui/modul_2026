@@ -1,0 +1,322 @@
+---
+title: "(Pertemuan 7) Variabel Kualitatif dalam Regresi Berganda"
+subtitle: "Dummy Variables, Main Effects, dan Interaksi Kuantitatif-Kualitatif"
+author: "Tim Asisten Lab Departemen Matematika UI"
+image: "image7.jpg"
+format: html
+editor: visual
+date: 2026-05-18
+---
+
+Kembali ke [**Model Linier**](https://aslab-math-ui.github.io/modul-prak/modul/2026/genap/model_linier/molin2026genap.html)
+
+## Pendahuluan
+
+Sampai praktikum 6, semua prediktor yang kita pakai bersifat kuantitatif - angka yang bisa dioperasikan secara matematis seperti `wt`, `hp`, dan `disp`. Tapi di data nyata, banyak variabel yang bersifat kategorik: jenis bahan bakar, jenis transmisi, jenis kelamin, kota asal.
+
+Variabel kategorik tidak bisa langsung dimasukkan ke model regresi sebagai angka mentah. Kalau kita kodekan Automatic = 1, Manual = 2, kita secara implisit bilang Manual "dua kali lebih besar" dari Automatic - yang tidak punya makna apapun. Solusinya adalah **dummy variables** (disebut juga indicator variables): variabel 0-1 yang merepresentasikan keanggotaan di suatu kategori (Mendenhall et al., 2011, Sec. 4.12 dan 5.7).
+
+### Package yang Dipakai
+
+-   `tidyverse`: untuk wrangling dan visualisasi.
+-   `patchwork`: untuk menggabungkan beberapa plot sekaligus.
+
+```{r}
+#| message: false
+#| warning: false
+
+library(tidyverse)
+library(patchwork)
+```
+
+### Data
+
+Kita pakai `mtcars` dengan dua variabel kualitatif: `am` (transmisi: Automatic/Manual) dan `cyl` (jumlah silinder: 4, 6, 8 - diperlakukan sebagai kategorik di bagian akhir).
+
+```{r}
+data(mtcars)
+df      <- mtcars
+df$am   <- factor(df$am,  levels = c(0, 1), labels = c("Automatic", "Manual"))
+df$cyl  <- factor(df$cyl, levels = c(4, 6, 8))
+
+str(df)
+```
+
+## Variabel Kualitatif dengan Dua Level
+
+### Konsep Dummy Variable
+
+Untuk variabel dengan dua level (misalnya `am`: Automatic atau Manual), kita butuh satu dummy variable:
+
+$$x_{am} = \begin{cases} 1 & \text{jika Manual} \\ 0 & \text{jika Automatic} \end{cases}$$
+
+Level yang diberi nilai 0 disebut **base level** (level referensi). Semua interpretasi koefisien dilakukan relatif terhadap base level ini.
+
+Kalau R sudah diset sebagai faktor, `lm()` otomatis membuat dummy variable. R selalu memilih level pertama secara alfabetis sebagai base level, kecuali kalau kita tentukan sendiri.
+
+```{r}
+# Cek level yang dipakai R
+levels(df$am)
+# "Automatic" = level pertama = base level
+# "Manual" = level kedua = dikodekan 1
+```
+
+### Model 1: Hanya Variabel Kualitatif
+
+```{r}
+m_am <- lm(mpg ~ am, data = df)
+summary(m_am)
+```
+
+Interpretasi koefisien:
+
+-   $\hat{\beta}_0$ = rata-rata `mpg` untuk Automatic (base level)
+-   $\hat{\beta}_1$ = selisih rata-rata `mpg` antara Manual dan Automatic
+
+Jadi $\hat{\beta}_0 + \hat{\beta}_1$ = rata-rata `mpg` untuk Manual.
+
+```{r}
+# Verifikasi: bandingkan dengan rata-rata per grup
+df %>%
+  group_by(am) %>%
+  summarise(mean_mpg = mean(mpg))
+```
+
+Nilai $\hat{\beta}_0$ harus sama dengan rata-rata Automatic, dan $\hat{\beta}_0 + \hat{\beta}_1$ harus sama dengan rata-rata Manual.
+
+### Model 2: Variabel Kualitatif + Kuantitatif (Parallel Slopes)
+
+Model pertama terlalu sederhana karena tidak mempertimbangkan prediktor lain. Kita tambahkan `wt`:
+
+$$E(y) = \beta_0 + \beta_1 x_{wt} + \beta_2 x_{am}$$
+
+```{r}
+m_parallel <- lm(mpg ~ wt + am, data = df)
+summary(m_parallel)
+```
+
+Model ini menghasilkan **dua garis regresi yang sejajar** - satu untuk Automatic, satu untuk Manual - dengan slope `wt` yang sama tapi intercept berbeda sebesar $\hat{\beta}_2$.
+
+```{r}
+#| fig-width: 8
+#| fig-height: 4
+
+# Ambil fitted values untuk tiap grup
+df_plot <- df %>%
+  mutate(fitted = fitted(m_parallel))
+
+ggplot(df, aes(x = wt, y = mpg, color = am)) +
+  geom_point(size = 2.5) +
+  geom_line(data = df_plot, aes(y = fitted), linewidth = 1) +
+  labs(title = "Model Parallel Slopes: mpg ~ wt + am",
+       x = "Berat (wt)", y = "mpg", color = "Transmisi") +
+  theme_minimal()
+```
+
+Interpretasi:
+
+-   $\hat{\beta}_1$ = perubahan `mpg` untuk setiap kenaikan 1 unit `wt`, berlaku sama untuk Automatic maupun Manual
+-   $\hat{\beta}_2$ = selisih `mpg` antara Manual dan Automatic, **pada berat yang sama**
+
+Asumsi model ini: pengaruh `wt` terhadap `mpg` tidak bergantung pada jenis transmisi. Kalau asumsi ini tidak realistis, kita butuh model interaksi.
+
+## Interaksi antara Variabel Kuantitatif dan Kualitatif
+
+### Konsep
+
+Kalau kita curiga bahwa slope pengaruh `wt` berbeda antara Automatic dan Manual, kita perlu model interaksi:
+
+$$E(y) = \beta_0 + \beta_1 x_{wt} + \beta_2 x_{am} + \beta_3 (x_{wt} \cdot x_{am})$$
+
+Model ini menghasilkan **dua garis dengan slope berbeda** - bukan lagi sejajar.
+
+Substitusi level:
+
+-   **Automatic** ($x_{am} = 0$): $E(y) = \beta_0 + \beta_1 x_{wt}$
+-   **Manual** ($x_{am} = 1$): $E(y) = (\beta_0 + \beta_2) + (\beta_1 + \beta_3) x_{wt}$
+
+Jadi $\beta_3$ mengukur perbedaan slope antara Manual dan Automatic (Mendenhall et al., 2011, Sec. 5.10).
+
+```{r}
+m_interaksi <- lm(mpg ~ wt * am, data = df)
+summary(m_interaksi)
+```
+
+```{r}
+#| fig-width: 8
+#| fig-height: 4
+
+ggplot(df, aes(x = wt, y = mpg, color = am)) +
+  geom_point(size = 2.5) +
+  geom_smooth(method = "lm", se = FALSE, linewidth = 1) +
+  labs(title = "Model Interaksi: mpg ~ wt * am",
+       x = "Berat (wt)", y = "mpg", color = "Transmisi") +
+  theme_minimal()
+```
+
+Interpretasi:
+
+-   $\hat{\beta}_0$ = intercept untuk Automatic
+-   $\hat{\beta}_1$ = slope `wt` untuk Automatic
+-   $\hat{\beta}_2$ = perbedaan intercept antara Manual dan Automatic
+-   $\hat{\beta}_3$ = perbedaan slope `wt` antara Manual dan Automatic
+
+Kalau $\hat{\beta}_3$ tidak signifikan (p-value besar), tidak ada cukup bukti bahwa slope-nya berbeda - model parallel slopes mungkin sudah cukup.
+
+### Bandingkan: Parallel Slopes vs Interaksi
+
+```{r}
+# Nested F-test: apakah suku interaksi wt:am perlu dipertahankan?
+anova(m_parallel, m_interaksi)
+```
+
+Cara baca:
+
+-   H0: $\beta_3 = 0$ (model parallel slopes cukup)
+-   Kalau p-value kecil (\< 0.05): tolak H0, suku interaksi signifikan, pakai model interaksi
+-   Kalau p-value besar: tidak ada bukti kuat interaksi, pakai model parallel slopes
+
+## Variabel Kualitatif dengan Lebih dari Dua Level
+
+### Konsep
+
+Untuk variabel dengan $k$ level, kita butuh $k - 1$ dummy variable. Satu level jadi base level, sisanya masing-masing dapat satu dummy variable (Mendenhall et al., 2011, Sec. 5.7).
+
+Untuk `cyl` dengan 3 level (4, 6, 8 silinder), kita butuh 2 dummy variable:
+
+$$x_1 = \begin{cases} 1 & \text{jika cyl = 6} \\ 0 & \text{jika tidak} \end{cases} \qquad x_2 = \begin{cases} 1 & \text{jika cyl = 8} \\ 0 & \text{jika tidak} \end{cases}$$
+
+Base level: cyl = 4.
+
+```{r}
+# Pastikan level faktor sudah benar
+# cyl = 4 akan jadi base level (level pertama)
+levels(df$cyl)
+```
+
+### Model dengan Variabel Kualitatif Tiga Level
+
+```{r}
+m_cyl <- lm(mpg ~ cyl, data = df)
+summary(m_cyl)
+```
+
+Interpretasi:
+
+-   $\hat{\beta}_0$ = rata-rata `mpg` untuk cyl = 4 (base level)
+-   $\hat{\beta}_1$ (`cyl6`) = selisih rata-rata `mpg` antara cyl = 6 dan cyl = 4
+-   $\hat{\beta}_2$ (`cyl8`) = selisih rata-rata `mpg` antara cyl = 8 dan cyl = 4
+
+```{r}
+# Verifikasi dengan rata-rata per grup
+df %>%
+  group_by(cyl) %>%
+  summarise(mean_mpg = round(mean(mpg), 3))
+```
+
+### Model Lengkap dengan Kuantitatif dan Kualitatif Tiga Level
+
+```{r}
+# Main effects: wt + cyl
+m_main <- lm(mpg ~ wt + cyl, data = df)
+summary(m_main)
+
+# Interaksi: wt berinteraksi dengan cyl
+m_int_cyl <- lm(mpg ~ wt * cyl, data = df)
+summary(m_int_cyl)
+```
+
+```{r}
+#| fig-width: 9
+#| fig-height: 4
+
+p_main <- ggplot(df, aes(x = wt, y = mpg, color = cyl)) +
+  geom_point(size = 2) +
+  geom_smooth(method = "lm", se = FALSE, linewidth = 1,
+              aes(group = cyl)) +
+  labs(title = "Main Effects: wt + cyl",
+       x = "wt", y = "mpg", color = "Silinder") +
+  theme_minimal()
+
+p_int <- ggplot(df, aes(x = wt, y = mpg, color = cyl)) +
+  geom_point(size = 2) +
+  geom_smooth(method = "lm", se = FALSE, linewidth = 1) +
+  labs(title = "Interaksi: wt * cyl",
+       x = "wt", y = "mpg", color = "Silinder") +
+  theme_minimal()
+
+p_main + p_int
+```
+
+Di plot kiri (main effects), tiga garis sejajar - slope `wt` sama untuk semua level `cyl`. Di plot kanan (interaksi), slope berbeda untuk tiap level `cyl`.
+
+```{r}
+# Uji apakah interaksi wt:cyl signifikan
+anova(m_main, m_int_cyl)
+```
+
+## Mengganti Base Level
+
+Kadang kita ingin interpretasi relatif terhadap level yang berbeda. Misalnya, kita ingin cyl = 8 jadi base level:
+
+```{r}
+df$cyl_rel8 <- relevel(df$cyl, ref = "8")
+m_rel8 <- lm(mpg ~ cyl_rel8, data = df)
+summary(m_rel8)
+
+# Sekarang:
+# (Intercept) = rata-rata mpg untuk cyl = 8
+# cyl_rel84   = selisih cyl=4 vs cyl=8
+# cyl_rel86   = selisih cyl=6 vs cyl=8
+```
+
+Cara baca tidak berubah - hanya referensinya yang bergeser.
+
+## Dummy Variables Manual vs Faktor di R
+
+R bisa membuat dummy variable otomatis kalau variabel sudah berupa faktor. Tapi kadang kita perlu membuat dummy variable secara manual, misalnya kalau data masih berupa numerik 0/1:
+
+```{r}
+# Cara R otomatis (direkomendasikan)
+df$am_factor <- factor(df$am)
+lm(mpg ~ am_factor, data = df)
+
+# Cara manual (kalau perlu kontrol penuh)
+df$am_manual <- ifelse(df$am == "Manual", 1, 0)
+lm(mpg ~ am_manual, data = df)
+
+# Keduanya menghasilkan koefisien yang sama
+```
+
+Pakai cara otomatis (faktor) kecuali ada alasan khusus untuk manual. Keuntungan faktor: R otomatis membuat semua $k-1$ dummy variable, otomatis memberi nama yang jelas di output, dan mudah diganti base level-nya dengan `relevel()`.
+
+## Referensi Sintaks
+
+```{r}
+#| eval: false
+
+# Buat faktor dan tentukan base level
+df$x <- factor(df$x, levels = c("A", "B", "C"))  # A jadi base level
+df$x <- relevel(df$x, ref = "B")                  # ganti base level ke B
+
+# Model dengan variabel kualitatif
+lm(y ~ x_kual, data = df)                         # hanya kualitatif
+lm(y ~ x_kuan + x_kual, data = df)                # parallel slopes
+lm(y ~ x_kuan * x_kual, data = df)                # interaksi (slope berbeda)
+lm(y ~ x_kuan + x_kual + x_kuan:x_kual, data=df) # sama dengan baris di atas
+
+# Nested F-test untuk uji interaksi
+anova(m_parallel, m_interaksi)
+
+# Lihat struktur dummy variable yang dibuat R
+model.matrix(m_parallel)[1:5, ]
+
+# Rata-rata per grup (verifikasi koefisien)
+df %>% group_by(x_kual) %>% summarise(mean_y = mean(y))
+```
+
+## Referensi
+
+Mendenhall, W., Sincich, T. (2011). *A Second Course in Statistics: Regression Analysis* (7th ed.). Prentice Hall.
+
+Materi modul ini mengacu pada Sec. 4.12 (model dengan variabel kualitatif dua level), Sec. 5.7 (satu variabel kualitatif $k$ level), Sec. 5.8 (dua variabel kualitatif), dan Sec. 5.10 (model dengan variabel kuantitatif dan kualitatif sekaligus).

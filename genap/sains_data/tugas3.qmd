@@ -1,7 +1,7 @@
 ---
 title: "Tugas 3 Praktikum Sains Data: Klasifikasi Gambar"
 image: https://raw.githubusercontent.com/aslab-math-ui/asset/main/sains_data/static/aggarwal_nndl_hal321.png
-description: "Deadline: Minggu, 7 Juni 2026"
+description: "Deadline: Sabtu, 13 Juni 2026"
 date: 05/12/2026
 page-navigation: true
 format: html
@@ -84,7 +84,7 @@ Gunakan kode berikut untuk load gambar ke dalam python
 
 <a href="./tugas3_manual.ipynb" class="btn">Load Dataset</a>
 
-Tujuan Anda adalah membangun model klasifikasi untuk memprediksi kelas dari gambar-gambar ini (multi-class classification). Lakukan *end-to-end Deep Learning*, atau lebih tepatnya *end-to-end CNN Image Classification*, yang meliputi:
+Tujuan Anda adalah membangun model klasifikasi untuk memprediksi kelas dari gambar-gambar yang diberikan. Lakukan *end-to-end Deep Learning*, atau lebih tepatnya *end-to-end CNN Image Classification*, yang meliputi:
 
 a. Langkah ***preprocessing*** yang sekiranya diperlukan.
 
@@ -93,9 +93,9 @@ b. **EDA:** Lakukan eksplorasi data dengan membuat visualisasi dari sebagian gam
 c. ***Modelling:*** Buatlah kedua model ini:
     - Model CNN sederhana
 
-    - Gunakan model berbasis transfer learning, seperti ResNet, VGGNet, EfficientNet, dsb., yaitu model yang sebelumnya sudah dilatih (pretrained) di dataset besar seperti ImageNet, lalu kalian adaptasikan untuk tugas klasifikasi pada CIFAR-10.
+    - Gunakan model berbasis transfer learning, seperti ResNet, VGGNet, EfficientNet, dsb., yaitu model yang sebelumnya sudah dilatih (pretrained) di dataset besar seperti ImageNet, lalu kalian adaptasikan untuk tugas klasifikasi data yang diberikan.
 
 d. **Evaluasi model klasifikasi:** Untuk kedua model klasifikasi yang telah Anda bangun, lakukan evaluasi dengan:
-    - Menampilkan atau menghitung metrik evaluasi untuk klasifikasi multi-kelas (misalnya akurasi, precision, recall, F1-score, dsb).
+    - Menampilkan atau menghitung metrik evaluasi untuk klasifikasi (misalnya akurasi, precision, recall, F1-score, dsb).
     - Menampilkan grafik garis (line plot) yang membandingkan train accuracy vs validation accuracy selama proses pelatihan.
     - Berdasarkan hasil evaluasi tersebut, bandingkan performa kedua model dari sisi metrik evaluasi, jumlah total parameter, dan waktu komputasi (running time). Tentukan model mana yang menurut Anda paling baik secara keseluruhan, disertai dengan alasannya

@@ -12,7 +12,7 @@ format: html
   margin: 0.5rem 0;
 }
 </style>
-Kembali ke [Tugas 1](./tugas1.qmd)
+Kembali ke [Tugas 1](../tugas1.qmd)
 
 <a href="./house_prices_data_description.txt" class="btn">txt</a>
 

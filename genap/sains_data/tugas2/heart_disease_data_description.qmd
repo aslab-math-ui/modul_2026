@@ -12,7 +12,7 @@ format: html
   margin: 0.5rem 0;
 }
 </style>
-Kembali ke [Tugas 2](./tugas2.qmd)
+Kembali ke [Tugas 2](../tugas2.qmd)
 
 <a href="./heart_disease_data_description.txt" class="btn">txt</a>
 

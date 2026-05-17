@@ -86,7 +86,7 @@ Dataset ini bertujuan untuk mengidentifikasi apakah seseorang terkena penyakit j
 
 Jika ingin melihat deskripsi lebih rinci mengenai tiap fitur pada dataset, silahkan buka file `.txt` berikut:
 
-<a href="./heart_disease_data_description.qmd" class="btn">Deskripsi Fitur</a>
+<a href="./tugas2/heart_disease_data_description.qmd" class="btn">Deskripsi Fitur</a>
 
 Metode-metode klasifikasi yang sejauh ini sudah kita pelajari selama praktikum adalah
 

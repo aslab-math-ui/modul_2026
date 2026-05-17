@@ -1,5 +1,52 @@
-# Latihan 3 Praktikum Persamaan Diferensial Parsial: Skema Beda Hingga untuk PDB Linear
+# Latihan 1 Praktikum Persamaan Diferensial Parsial: Skema Beda Hingga untuk PDB Linear
 
 Kembali ke [Praktikum Persamaan Diferensial Parsial](./prakpdp2026.qmd)
 
-**Latihan praktikum belum ada**
+## Soal 1
+
+Diberikan persamaan gelombang
+$$
+\begin{gathered}
+    2u_{tt} = 128u_{xx}.\quad 0 \leq x \leq 3, \quad t > 0,\\
+    u(0, t) = 0, \quad u(3, t) = 0, \quad t > 0,\\
+    u(x, 0) = x(x^2 - 9),\quad u_t(x, 0) = 0, \quad 0 \leq x \leq 3
+\end{gathered}
+$$
+
+dan dengan solusi eksak
+$$
+\begin{gathered}
+    u(x, t) = \sum ^\infty _{n = 1}A_n \cos\left( \frac{8 n \pi t}{3} \right)\sin\left( \frac{n \pi x}{3} \right)\\
+    A_n = \int^3_0 \frac{2}{3}x(x^3-9)\sin\left( \frac{n \pi x}{3} \right)
+\end{gathered}
+$$
+
+## Soal 2
+Diberikan persamaan gelombang
+$$
+\begin{align*}
+    u_{tt} &= 9u_{xx}, \quad &0 \leq x \leq 1, \quad t > 0,\\
+    u(0, t) &= 0, \quad u(3, t) = 0, &\quad t > 0,\\
+    u(x, 0) &= 0,\quad u_t(x, 0) = 
+    \begin{cases} 
+        x,  &0 \le x \le \frac{1}{2} \\ 
+        1 - x, &\frac{1}{2} \le x \le 1 
+    \end{cases}, \quad &0 \leq x \leq 1
+\end{align*}
+$$
+yang memiliki suatu solusi eksak. 
+
+- Gunakan metode Beda Hingga untuk mengaproksimasi solusi dari masalah tersebut! Bandingkan hasil numerik dengan solusi eksaknya (cukup hingga 10 suku pertama saja)! Anda bebas menggunakan kombinasi *step size* yang menurut anda cocok. 
+
+- Khusus Soal 2, cari solusi eksaknya dan gunakan solusi tersebut untuk dibandingkan dengan aproksimasi numerik!
+
+## Catatan Tambahan
+
+File yang dikumpulkan berupa *script file*, *file txt* berisi setiap anggota kelompok, dan *file pdf* penjelasan dengan format. Ketiga dokumen dikumpulkan dalam `.zip` dengan format penamaan
+
+**Nama Lengkap_NPM_latihan(i)_Kelas.tipeFile**
+
+Contoh:
+
+- **Muhammad Fasya Syaifullah_2206025496_latihan1.zip**
+- **Muhammad Fasya Syaifullah_2206025496_latihan1_revisi.zip**

@@ -1,5 +1,54 @@
-# Latihan 4 Praktikum Persamaan Diferensial Parsial: Skema Beda Hingga untuk PDB Linear
+# Latihan 4 Praktikum Persamaan Diferensial Parsial: Persamaan Laplace
 
 Kembali ke [Praktikum Persamaan Diferensial Parsial](./prakpdp2026.qmd)
 
-**Latihan praktikum belum ada**
+## Soal 1
+
+Diberikan persamaan gelombang
+$$
+ \begin{array}{ccc} {u_{xx}+u_{yy}=0,}&{0<x<2,}&{0<y<2,}\\[4pt]{u(x,0)=f(x),}&{u(x,2)=0,}&{0\leq x\leq 2,}\\[4pt]{u(0,y)=0,}&{u(2,y)=0,}&{0\leq y\leq 2}\end{array}
+$$
+
+dengan 
+$$
+f(x)=x(x^2-6x+8)
+$$
+
+dan dengan solusi eksak
+$$
+u(x,y)={96\over\pi^3}\sum_{n=1}^\infty{\sinh \left(n\pi(2-y)/2\right)\over n^3\sinh \left(n\pi\right)} \sin{\left(n\pi x\over 2\right)}.
+$$
+
+Acuan soal: [link](https://math.libretexts.org/Bookshelves/Differential_Equations/Elementary_Differential_Equations_with_Boundary_Value_Problems_(Trench)/12%3A_Fourier_Solutions_of_Partial_Differential_Equations/12.03%3A_Laplace's_Equation_in_Rectangular_Coordinates)
+
+- Gunakan metode Beda Hingga untuk mengaproksimasi solusi dari masalah tersebut! Bandingkan hasil numerik dengan solusi eksaknya (cukup hingga 10 suku pertama saja)! Anda bebas menggunakan kombinasi *step size* yang menurut anda cocok. 
+
+## Soal 2
+Diberikan masalah nilai awal-batas
+
+$$
+\begin{aligned}
+    u_t &= 3u_{xx}, \quad 0 \le x \le \pi, \quad 0 < t \le T, \\
+    u(0,t) &= u(\pi, t) = 0, \quad 0 < t \le T, \\
+    u(x,0) &= 3\sin{(2x)} - 6\sin{(5x)}, \quad 0 \le x \le \pi
+\end{aligned}
+$$
+
+Dengan $T=2$,
+
+- Cari solusi analitik dari persamaan tersebut !
+
+- Buatlah *script file* `BackwardBrook.m` berisi penggunaan metode *backward-difference* untuk mengaproksimasi solusi dari PDP tersebut. Lampirkan gambar grafiknya di *file* penjelasan. Seberapa mirip hasilnya dengan solusi analitik?
+
+- Buatlah *script file* `CrankFranky.m` berisi penggunaan metode Crank-Nicolson untuk mengaproksimasi solusi dari PDP tersebut. Lampirkan gambar grafiknya di *file* penjelasan. Seberapa mirip hasilnya dengan solusi analitik?
+
+## Catatan Tambahan
+
+File yang dikumpulkan berupa *script file*, *file txt* berisi **setiap** ~~plis semua~~ anggota kelompok, dan *file pdf* penjelasan. Ketiga dokumen dikumpulkan dalam `.zip` dengan format penamaan
+
+Nama Lengkap_NPM_latihan(i)_Kelas.tipeFile
+
+Contoh:
+
+- **Muhammad Fasya Syaifullah_2206025496_latihan1.zip**
+- **Muhammad Fasya Syaifullah_2206025496_latihan1_revisi.zip**

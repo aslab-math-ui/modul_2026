@@ -1,0 +1,48 @@
+---
+title: "Praktikum Strukdat (Struktur Data) 2026 Ganjil (Kurikulum 2024)"
+format: html
+page-navigation: true
+
+author : 
+  - "Farhan Fauzan Rizqy"
+  - "Keagan Daevon Audrich"
+
+language:
+  title-block-author-single: "Asisten:"
+  title-block-author-plural: "Asisten:"
+
+listing:
+  - id: modul
+    contents: "modul*.ipynb"
+    type: grid
+    fields: [image, title, date]
+    sort:
+      - "date asc"
+      - "title asc"
+  - id: tugas
+    contents: "tugas*.qmd"
+    type: grid
+    fields: [image, title, date]
+    sort:
+      - "date asc"
+      - "title asc"
+---
+
+
+::: {.panel-tabset}
+
+## Modul
+
+:::{#modul}
+:::
+
+
+## Tugas
+
+:::{#tugas}
+:::
+
+:::
+
+
+Kembali ke [Praktikum](../../../../semuahalaman/praktikum.qmd)

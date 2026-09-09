@@ -1,0 +1,25 @@
+---
+title: "Praktikum PDB (Persamaan Diferensial Biasa)"
+subtitle: "Genap 2026 - Kurikulum 2024"
+author : "Daniel Abyasa"
+language:
+  title-block-author-single: "Asisten:"
+  title-block-author-plural: "Asisten:"
+toc: false
+format: html
+---
+
+<a href="../../../../semuahalaman/praktikum.qmd" class="btn btn-outline-primary mb-4">
+<i class="fa-solid fa-arrow-left"></i> Kembali ke Arsip Praktikum
+</a>
+
+::: {.panel-tabset}
+
+## Daftar Modul
+
+-   **Modul 1: Metode Beda Hingga untuk PDB Linear**
+    <br> <i class="fa-solid fa-calendar-days" aria-hidden="true"></i> **Tanggal:** 10 September 2026
+    <br> <i class="fa-solid fa-location-dot" aria-hidden="true"></i> **Lokasi:** Lab Komputer D.311 
+    <br> <i class="fa-solid fa-book" aria-hidden="true"></i> **Materi:** [Buka Modul 1](./prak1.qmd)
+
+:::

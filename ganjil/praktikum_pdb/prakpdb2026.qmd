@@ -17,9 +17,20 @@ format: html
 
 ## Daftar Modul
 
+-   **Modul 0: Pengenalan GNU Octave**
+    <br> <i class="fa-solid fa-calendar-days" aria-hidden="true"></i> **Tanggal:** 10 September 2026
+    <br> <i class="fa-solid fa-location-dot" aria-hidden="true"></i> **Lokasi:** Lab Komputer D.311 
+    <br> <i class="fa-solid fa-book" aria-hidden="true"></i> **Materi:** [Buka Modul 0](./modul0.ipynb)
+
 -   **Modul 1: Metode Beda Hingga untuk PDB Linear**
     <br> <i class="fa-solid fa-calendar-days" aria-hidden="true"></i> **Tanggal:** 10 September 2026
     <br> <i class="fa-solid fa-location-dot" aria-hidden="true"></i> **Lokasi:** Lab Komputer D.311 
-    <br> <i class="fa-solid fa-book" aria-hidden="true"></i> **Materi:** [Buka Modul 1](./prak1.qmd)
+    <br> <i class="fa-solid fa-book" aria-hidden="true"></i> **Materi:** [Buka Modul 1](./modul1.ipynb)
 
+## Latihan
+
+-   **Latihan 1: Metode Euler**
+    <br> <i class="fa-solid fa-calendar-days" aria-hidden="true"></i> **Tanggal:** 10 September 2026
+    <br> <i class="fa-solid fa-location-dot" aria-hidden="true"></i> **Lokasi:** Lab Komputer D.311 
+    <br> <i class="fa-solid fa-book" aria-hidden="true"></i> **Materi:** [Buka Latihan 1](./latihan1.qmd)
 :::

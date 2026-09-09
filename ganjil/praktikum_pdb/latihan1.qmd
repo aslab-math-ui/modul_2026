@@ -1,0 +1,23 @@
+# Latihan 1 Praktikum Persamaan Diferensial Biasa: Metode Euler
+
+Kembali ke [Praktikum Persamaan Diferensial Biasa](./prakpdb2026.qmd)
+
+## Soal 1
+
+Diberikan suatu masalah nilai awal (*Initial Value Problem*):
+
+$$
+\begin{gathered}
+    y' = -y + ty^\frac{1}{2}, \hspace{1 cm} 2\leq t\leq 3,\\
+    y(2) = 2, \hspace{1 cm} h = 0.25
+\end{gathered}
+$$
+
+Diketahui bahwa solusi eksak dari model diberikan oleh $$
+\begin{gathered}
+    y(t) = (t - 2 + \sqrt{2}e^{-t/2})^2.
+\end{gathered}
+$$
+
+- Buatlah scriptfile **nama_kelas_npm** (contoh: Pandu Adjie_C_1234567890.m) berisi penggunaan metode Euler untuk mengaproksimasi solusi dari model secara numerik !
+- Tunjukkan solusi aproksimasi anda dalam bentuk plot , bandingkan nilai solusi aproksimasi dengan solusi eksak pada setiap step, kemudian tampilkan error total dari solusi aproksimasi terhadap solusi eksak!

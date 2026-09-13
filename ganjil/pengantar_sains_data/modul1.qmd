@@ -11,7 +11,7 @@ format:
     embed-resources: true
 ---
 
-<a href="../psd2026genap.qmd" class="btn btn-outline-primary mb-4"> <i class="fa-solid fa-arrow-left"></i> Kembali ke arsip PSD </a>
+<a href="psd2026ganjil.qmd" class="btn btn-outline-primary mb-4"> <i class="fa-solid fa-arrow-left"></i> Kembali ke arsip PSD </a>
 
 ## Tujuan Pembelajaran
 
@@ -458,4 +458,4 @@ Sama seperti pada Python, operasi-operasi pada array tentunya bisa dilakukan den
 
 ------------------------------------------------------------------------
 
-<a href="../psd2025.qmd" class="btn btn-outline-primary mb-4"> <i class="fa-solid fa-arrow-left"></i> Kembali ke Arsip Praktikum PSD 2025 </a>
+<a href="psd2026ganjil.qmd" class="btn btn-outline-primary mb-4"> <i class="fa-solid fa-arrow-left"></i> Kembali ke Arsip Praktikum PSD 2025 </a>

@@ -14,7 +14,7 @@ language:
 
 listing:
   - id: modul
-    contents: "modul*.ipynb"
+    contents: "modul*.qmd"
     type: grid
     fields: [image, title, date]
     sort:

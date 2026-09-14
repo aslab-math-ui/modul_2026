@@ -8,7 +8,7 @@ editor: visual
 date: 2026-9-13
 ---
 
-Kembali ke [**Model Linier**](https://aslab-math-ui.github.io/modul-prak/modul/2026/genap/model_linier/molin2026genap.html)
+Kembali ke [**Model Linier**](https://aslab-math-ui.github.io/modul-prak/modul/2026/ganjil/model_linier/molin2026ganjil.html)
 
 # Pendahuluan
 

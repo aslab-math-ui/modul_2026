@@ -1,5 +1,5 @@
 ---
-title: "Praktikum Molin (Model Linier) 2026 Genap (Kurikulum 2024)"
+title: "Praktikum Molin (Model Linier) 2026 Ganjil (Kurikulum 2024)"
 format: html
 page-navigation: true
 

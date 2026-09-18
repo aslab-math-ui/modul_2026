@@ -27,6 +27,11 @@ format: html
     <br> <i class="fa-solid fa-location-dot" aria-hidden="true"></i> **Lokasi:** Lab Komputer D.311 
     <br> <i class="fa-solid fa-book" aria-hidden="true"></i> **Materi:** [Buka Modul 1](./modul1.ipynb)
 
+-   **Modul 2: Metode Runge-Kutta dan variasinya**
+    <br> <i class="fa-solid fa-calendar-days" aria-hidden="true"></i> **Tanggal:** 1 Oktober 2026
+    <br> <i class="fa-solid fa-location-dot" aria-hidden="true"></i> **Lokasi:** Lab Komputer D.311 
+    <br> <i class="fa-solid fa-book" aria-hidden="true"></i> **Materi:** [Buka Modul 2](./modul2.ipynb)
+
 ## Latihan
 
 -   **Latihan 1: Metode Euler**

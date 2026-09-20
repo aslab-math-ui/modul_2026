@@ -20,6 +20,13 @@ listing:
     sort:
       - "date asc"
       - "title asc"
+  - id: tambahan
+    contents: "tambahan*.qmd"
+    type: grid
+    fields: [image, title, date]
+    sort:
+      - "date asc"
+      - "title asc" 
   - id: tugas
     contents: "tugas*.qmd"
     type: grid

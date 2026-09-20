@@ -1,5 +1,5 @@
 ---
-title: "(Pertemuan 02) Excel: Table Creation, Pivot Table, Visualizations"
+title: "Modul 2: Excel - Table Creation, Pivot Table, Visualizations"
 subtitle: "Excel: Pivot Table, Visualiations"
 description: "Offline di Departemen Matematika"
 image: https://raw.githubusercontent.com/aslab-math-ui/asset/main/pengantar_sains_data/static/excel_pivot_viz.png

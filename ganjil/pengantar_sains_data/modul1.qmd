@@ -6,9 +6,7 @@ date: 2026-09-15"
 image: "https://res.cloudinary.com/tahun2025/image/upload/v1757568667/2024/psd/r_excel.jpg"
 author: "Tim Asisten Lab Matematika UI"
 page-navigation: true
-format:
-  html:
-    embed-resources: true
+format: html
 ---
 
 <a href="psd2026ganjil.qmd" class="btn btn-outline-primary mb-4"> 

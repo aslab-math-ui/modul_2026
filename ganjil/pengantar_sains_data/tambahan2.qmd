@@ -6,7 +6,7 @@ date: "2026-09-21"
 image: "https://raw.githubusercontent.com/aslab-math-ui/asset/main/pengantar_sains_data/static/thumbnail-psd-modul-4.webp"
 ---
 
-<a href="../psd2026ganjil.qmd" class="btn btn-outline-primary mb-4">
+<a href="psd2026ganjil.qmd" class="btn btn-outline-primary mb-4">
 <i class="fa-solid fa-arrow-left"></i> Kembali ke Arsip Praktikum PSD 2025
 </a>
 
@@ -393,6 +393,6 @@ Simpan R skrip Anda. Jika Anda berhasil menyelesaikan semua langkah, Anda telah 
 
 ---
 
-<a href="../psd2026ganjil.qmd" class="btn btn-outline-primary mb-4">
+<a href="psd2026ganjil.qmd" class="btn btn-outline-primary mb-4">
 <i class="fa-solid fa-arrow-left"></i> Kembali ke Arsip Praktikum PSD
 </a>

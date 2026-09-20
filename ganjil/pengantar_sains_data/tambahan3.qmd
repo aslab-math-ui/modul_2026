@@ -6,7 +6,7 @@ date: "2026-09-21"
 image: "https://www.interviewbit.com/blog/wp-content/uploads/2022/04/r-projects-2048x1001.png"
 ---
 
-<a href="../psd2026ganjil.qmd" class="btn btn-outline-primary mb-4">
+<a href="psd2026ganjil.qmd" class="btn btn-outline-primary mb-4">
 <i class="fa-solid fa-arrow-left"></i> Kembali ke Arsip Praktikum PSD
 </a>
 
@@ -377,6 +377,6 @@ Untuk menguji pemahaman Anda, selesaikan tantangan berikut dalam R Script di dal
 
 ---
 
-<a href="../psd2026ganjil.qmd" class="btn btn-outline-primary mb-4">
+<a href="psd2026ganjil.qmd" class="btn btn-outline-primary mb-4">
 <i class="fa-solid fa-arrow-left"></i> Kembali ke Arsip Praktikum PSD
 </a>

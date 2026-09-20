@@ -6,7 +6,7 @@ author: "Tim Asisten Lab Matematika UI"
 image: "https://res.cloudinary.com/tahun2025/image/upload/f_auto,q_auto,w_800/v1757568633/2024/psd/excel_pivot_viz.png"
 ---
 
-<a href="../psd2026ganjil.qmd" class="btn btn-outline-primary mb-4">
+<a href="psd2026ganjil.qmd" class="btn btn-outline-primary mb-4">
 <i class="fa-solid fa-arrow-left"></i> Kembali ke Arsip Praktikum PSD
 </a>
 
@@ -213,6 +213,6 @@ Memahami ekosistem ini membantu Anda melihat bahwa analisis data adalah sebuah k
 
 ---
 
-<a href="../psd2026 Ganjil.qmd" class="btn btn-outline-primary mb-4">
+<a href="psd2026ganjil.qmd" class="btn btn-outline-primary mb-4">
 <i class="fa-solid fa/arrow-left"></i> Kembali ke Arsip Praktikum PSD
 </a>

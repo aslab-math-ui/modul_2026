@@ -1,13 +1,15 @@
 ---
-title: "(Pertemuan 05) R: Distribusi Probabilitas Diskrit"
+title: "R: Distribusi Probabilitas Diskrit"
 subtitle: "R: Discrete Probability Distributions"
 description: "Offline di Departemen Matematika"
-date: 10/21/2024
+date: 9/28/2026
 page-navigation: true
 format: html
 ---
 
-Kembali ke [Pengantar Sains Data](./psd2024.qmd)
+<a href="psd2026ganjil.qmd" class="btn btn-outline-primary mb-4">
+<i class="fa-solid fa-arrow-left"></i> Kembali ke Arsip Praktikum PSD
+</a>
 
 Selamat datang kembali di praktikum Pengantar Sains Data. Setelah sebelumnya membahas tentang serba-serbi visualisasi data, sekarang kita akan mulai membahas sejumlah bentuk distribusi probabilitas yang umum dikenal dan digunakan di dunia statistika, dimulai dari sejumlah distribusi diskrit.
 
@@ -1102,3 +1104,9 @@ Sangat mirip, ya! Kalian bisa mencoba hal yang sama dengan nilai $\lambda$ yang 
 # (Pengayaan) Distribusi Multinomial
 
 *(work in progress)*
+
+---
+
+<a href="psd2026ganjil.qmd" class="btn btn-outline-primary mb-4">
+<i class="fa-solid fa-arrow-left"></i> Kembali ke Arsip Praktikum PSD
+</a>

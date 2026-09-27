@@ -6,7 +6,7 @@ date: "2026-09-21"
 image: "https://aslab-math-ui.github.io/modul-prak/modul/2025/ganjil/pengantar_sains_data/pertemuan/modul-03_files/figure-html/unnamed-chunk-10-1.png"
 ---
 
-<a href="../psd2026ganjil.qmd" class="btn btn-outline-primary mb-4">
+<a href="psd2026ganjil.qmd" class="btn btn-outline-primary mb-4">
 <i class="fa-solid fa-arrow-left"></i> Kembali ke Arsip Praktikum PSD
 </a>
 
@@ -837,6 +837,6 @@ ggplot2:
 
 ---
 
-<a href="../psd2026ganjil.qmd" class="btn btn-outline-primary mb-4">
+<a href="psd2026ganjil.qmd" class="btn btn-outline-primary mb-4">
 <i class="fa-solid fa-arrow-left"></i> Kembali ke Arsip Praktikum PSD
 </a>

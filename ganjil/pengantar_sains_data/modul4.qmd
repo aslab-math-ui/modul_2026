@@ -1,6 +1,6 @@
 ---
-title: "R: Distribusi Probabilitas Diskrit"
-subtitle: "R: Discrete Probability Distributions"
+title: "Modul 4: R - Distribusi Probabilitas Diskrit"
+subtitle: "Discrete Probability Distributions"
 description: "Offline di Departemen Matematika"
 date: 9/28/2026
 page-navigation: true

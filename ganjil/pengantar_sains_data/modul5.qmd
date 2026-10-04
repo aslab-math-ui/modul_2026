@@ -11,7 +11,7 @@ format: html
 <i class="fa-solid fa-arrow-left"></i> Kembali ke Arsip Praktikum PSD
 </a>
 
-Melanjutkan dari pertemuan sebelumnya tentang distribusi diskirt di R, pada pertemuan kali ini, kita akan membahas tentang beberapa distribusi kontinu di R, tepatnya distribusi *uniform* (kontinu) dan distribusi normal, baik dengan *base R* ataupun dengan `distr`. Kemudian, kita juga akan membahas tentang distribusi probabilitas di Excel, baik diskrit maupun kontinu, terutama cara menghasilkan data *random* menggunakan Analysis ToolPak.
+Melanjutkan dari pertemuan sebelumnya tentang distribusi diskirt di R, pada pertemuan kali ini, kita akan membahas tentang beberapa distribusi kontinu di R, tepatnya distribusi *uniform* (kontinu) dan distribusi normal, baik dengan *base R* ataupun dengan `distr`.
 
 # Distribusi Kontinu dengan *base R*
 
@@ -581,11 +581,12 @@ plot(dist_sepal)
 ## Menghitung Probabilitas Kontinu
 
 Dengan parameter `sigma` dan `mu` yang sudah didapat, kita bisa menjawab pertanyaan-pertanyaan yang bersifat prediktif. Salah satu contoh pertanyaan tersebut seperti:
+
 - "Seberapa langka bunga dengan `Sepal.Length` kurang dari 5 cm?". 
 
 - "Berapa batas panjang sepal untuk 25% bunga terpendek?".
 
-Untuk pertanyaan pertama ("Seberapa langka bunga dengan `Sepal.Length` kurang dari 5 cm?"), ini sama saja dengan menanyakan "Berapa nilai $P(X \leq 5)$ jika $X \sim N(\mu, \sigma)$" sehingga kita gunakan `pnorm` (fungsi CDF untuk Distribusi Normal).
+Untuk pertanyaan pertama ("Seberapa langka bunga dengan `Sepal.Length` kurang dari 5 cm?"), ini sama saja dengan menanyakan "Berapa nilai $P(X \leq 5)$ jika $X \sim N(\mu, \sigma)$" sehingga kita gunakan `p` (fungsi CDF untuk Distribusi Normal).
 
 ```{r}
 # 1. Probabilitas Pr(X < 5)
@@ -594,7 +595,7 @@ p(dist_sepal)(5)
 
 Hasilnya memberi tahu kita estimasi persentase bunga di alam yang memiliki panjang sepal kurang dari 5 cm.
 
-Untuk pertanyaan kedua ("Berapa batas panjang sepal untuk 25% bunga terpendek?"), Kita gunakan `qnorm` (fungsi Quantile).
+Untuk pertanyaan kedua ("Berapa batas panjang sepal untuk 25% bunga terpendek?"), Kita gunakan `q` (fungsi Quantile).
 
 ```{r}
 # 2. Nilai x sehingga Pr(X <= x) = 0.25 (Kuartil 1)

@@ -12,6 +12,117 @@ format: html
 <i class="fa-solid fa-arrow-left"></i> Kembali ke arsip PSD 
 </a>
 
-Silakan unduh *worksheet* berikut: [Worksheet Pertemuan 2](https://raw.githubusercontent.com/aslab-math-ui/asset/main/pengantar_sains_data/datasets/worksheet_pertemuan2.xlsx)
+Pada modul ini, kita akan membahas mengenai penggunaan Microsoft Excel dalam praktikum Pengantar Sains Data. Sebelum memulai praktikum, silahkan undur *worksheet* berikut:
 
-Penjelasan menyusul :)
+<a href="https://raw.githubusercontent.com/aslab-math-ui/asset/main/pengantar_sains_data/datasets/worksheet_modul2.xlsx" class="btn btn-primary" target="_blank" role="button">
+<i class="fa-solid fa-download"></i> Worksheet modul 2
+</a>
+
+Kita akan mempelajari terlebih dahulu cara menyajikan dan memvisualisasikan data dengan Microsoft Excel.
+
+# Visualisasi 
+
+Microsoft Excel menyediakan berbagai jenis grafik yang dapat digunakan untuk memvisualisasikan data, seperti *bar chart, column chart, line chart, pie chart, scatter plot*, dan histogram. Pada modul ini kita akan menggunakan 2 cara untuk melakukan visualisasi, yakni dengan fitur *chart* pada bagian **Insert** serta dengan *pivot chart*. Untuk detail terkait pivoting, kalian bisa melihat ke [Tambahan 1](./tambahan1.qmd) untuk dasarnya.
+
+Jika data kalian cukup sederhana, misalkan seperti pada tabel data yang ada di *sheets* dengan nama plotnya (seperti pie chart, dll) sangat disarankan untuk menggunakan langsung fitur *chart* pada bagian **Insert** dan kalian bisa tinggal pilih visualisasi apa yang kalian inginkan.
+
+![](https://raw.githubusercontent.com/aslab-math-ui/asset/main/pengantar_sains_data/static/chart.png)
+
+Untuk *pivot chart*, kalian cukup membuat tabel pivot lalu pilih salah satu entri dari tabel tersebut dan pilih *pivot chart* pada bagian **PivotTable Analyze**. Jika kalian ingin membuat seperti pada *sheet pivot chart* yang ada di *worksheet* kita, yang mana bisa secara otomatis mengganti tabel yang ada dengan memilih region yang ada, kalian bisa gunakan *insert slicer* pada bagian **PivotTable Analyze**.
+
+# Statistik Deskriptif
+
+Microsoft Excel tidak hanya digunakan untuk mengolah dan menyajikan data, tetapi juga menyediakan berbagai fitur untuk melakukan analisis data secara lebih sistematis. Salah satu fitur tersebut adalah *Analysis ToolPak*, yaitu *add-in* yang menyediakan berbagai alat analisis statistik, seperti statistik deskriptif, distribusi, visualis korelasi, regresi, dan analisis varians (ANOVA).
+
+Dalam praktikum ini, kita akan mempelajari cara mengaktifkan dan menggunakan Analysis ToolPak untuk membantu proses analisis data.
+
+## Aktivasi *Analysis ToolPak*
+
+Apakah kalian tahu kalau *Analysis ToolPak* sebenarnya sudah ada sedari awal kalian instalasi Micorosft Excel? Akan tetapi, *add-in* ini tidak secara bawaan sudah aktif untuk kalian pakai! *Add-in* ini dapat kalian aktifkan dengan cara berikut:
+
+::: panel-tabset
+## Windows
+
+1. Pilih menu *file* dan masuk ke menu **Opsi** (*option*).
+
+2. Pilih bagian **Add-in**.
+
+3. Pada kotak *dropdown* di bagian bawah terdapat **Kelola** (*Manage*), pilih **Add-in Excel** dan pilih **Pergi** (*Go*).
+
+4. Centangi kotak **Analysis ToolPak** dan pilih **OK**.
+
+5. *Analysis ToolPak* berhasil diaktifkan.
+
+## Mac
+
+1. Pilih menu *file* dan cari bagian **Alat** (*tools*).
+
+2. Pilih bagian **Add-in**.
+
+3. Centangi kotak **Analysis ToolPak** dan pilih **OK**.
+
+4. *Analysis ToolPak* berhasil diaktifkan.
+
+:::
+
+Untuk melihat apakah *Analysis ToolPak* sudah aktif, pilih bagian **Data** dan seharusnya sudah ada *Data Analysis*.
+
+![](https://raw.githubusercontent.com/aslab-math-ui/asset/main/pengantar_sains_data/static/aktifasi_toolpak.png)
+
+## Analisa
+
+Dalam Microsoft Excel, analisis statistik deskriptif dapat dengan mudah dengan *Analysis ToolPak* tanpa harus menghitung manual. Statistik deskriptif yang diberikan oleh *add-in* ini adalah sebagai berikut:
+
+- Mean (rata-rata seluruh data).
+
+- Median (nilai tengah).
+
+- Modus (nilai paling sering muncul).
+
+- Standard Error (tingkat ketelitian estimasi rata-rata sampel terhadap rata-rata populasi).
+
+- Standard Deviation sampel (persebaran data sampel terhadap rata-rata).
+
+- Variansi Sampel (tingkat keragaman data).
+
+- Kurtosis (karakteristik ekor distribusi data).
+
+- Skewness (kemencengan distribusi).
+
+- Range (rentang data).
+
+- Minimum.
+
+- Maximum.
+
+- Sum.
+
+- Count.
+
+- Confidence Level 95%, nilai yang ditampilkan adalah lebar interval estimasi mean populasi (mean sampel $\pm$ nilai diperoleh).
+
+Tentunya kalian juga bisa menghitung semua ini secara manual, kalian bisa melihat formula nya di *worksheet* yang ada.
+
+# Membangkitkan Distribusi (materi sebelum UTS)
+
+Pada Microsoft Excel, kita bisa dengan mudah membangkitkan nilai variabel acak menggunakan *Analysis Toolpak*. Kalian cukup pilih **Random Number Generation**, dan kalian tentukan distribusi dan nilai dari parameternya. Berikut penjelasan lebih lanjutnya:
+
+- Number of Variables : Banyaknya kolom yang ingin dimunculkan angka random
+
+- Number of Random Numbers : Banyaknya baris yang ingin dimunculkan angka random
+
+- Distribution : (kalian pilih)
+
+- Parameters : (kalian sesuaikan)
+
+- Untuk output, kalian bisa pilih kotak/kolom yang kalian inginkan (misal di kolom A) atau simpan pada *sheets* baru
+
+Jika kalian ingin melakukan visualisasi dari outputnya, *Select* seluruh angka yang dihasilkan dan lakukan langkah serupa dengan data-data sebelumnya. 
+
+Untuk distribusi diskrit, kalian harus membuat tabel PMF nya terlebih dahulu, dengan kolom 1 nya nilai $x$ dan kolom 2 nya $P(X = x)$.
+
+---
+
+<a href="psd2026ganjil.qmd" class="btn btn-outline-primary mb-4">
+<i class="fa-solid fa-arrow-left"></i> Kembali ke Arsip Praktikum PSD
+</a>

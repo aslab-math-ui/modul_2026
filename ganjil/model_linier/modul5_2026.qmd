@@ -30,6 +30,7 @@ Beda dengan model adequacy (yang dibahas via F-test, t-test, $R^2$) yang hanya m
 
 library(tidyverse)
 library(patchwork)
+install.packages("caret")
 library(caret)
 ```
 

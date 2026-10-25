@@ -26,6 +26,7 @@ Sebelum mulai, kita load dulu package yang dibutuhkan:
 
 ```{r}
 library(tidyverse)
+install.packages("patchwork")
 library(patchwork)
 ```
 

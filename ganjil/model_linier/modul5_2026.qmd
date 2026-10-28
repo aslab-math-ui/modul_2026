@@ -2,7 +2,7 @@
 title: "(Pertemuan 5) Model Validation dalam Regresi Berganda"
 subtitle: "Evaluasi Performa Model pada Data Baru"
 author: "Tim Asisten Lab Departemen Matematika UI"
-image: "image5.jpg"
+image: "image5.png"
 format: html
 editor: visual
 date: 2026-11-3

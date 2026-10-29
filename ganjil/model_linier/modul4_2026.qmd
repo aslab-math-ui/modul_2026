@@ -25,12 +25,11 @@ Sebelum mulai, kita load dulu package yang dibutuhkan:
 -   `patchwork`: package untuk menggabungkan beberapa plot `ggplot2` jadi satu tampilan berdampingan. Tanpa ini, kita harus pakai `par(mfrow=...)` yang lebih ribet dan tidak kompatibel dengan `ggplot2`.
 
 ``` r
-install.packages()
+install.packages("patchwork")
 ```
 
 ```{r}
 library(tidyverse)
-install.packages("patchwork")
 library(patchwork)
 ```
 

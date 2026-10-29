@@ -5,7 +5,7 @@ page-navigation: true
 
 author : 
   - "Hylmi Savero Ijraba"
-  - "Moh. Ihsan Anggara"
+  - "Moh. Ihsan Anggara Putra"
 
 language:
   title-block-author-single: "Asisten:"

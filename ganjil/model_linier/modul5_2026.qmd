@@ -24,13 +24,16 @@ Beda dengan model adequacy (yang dibahas via F-test, t-test, $R^2$) yang hanya m
 -   `patchwork`: untuk menggabungkan beberapa plot `ggplot2` jadi satu tampilan.
 -   `caret`: khusus untuk k-fold cross-validation. Package ini menyediakan fungsi `trainControl()` dan `train()` yang otomatis membagi data, fit model berulang, dan mengumpulkan metrik evaluasi.
 
+``` r
+install.packages("caret")
+```
+
 ```{r}
 #| message: false
 #| warning: false
 
 library(tidyverse)
 library(patchwork)
-install.packages("caret")
 library(caret)
 ```
 

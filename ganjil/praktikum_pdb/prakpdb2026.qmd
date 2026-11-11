@@ -32,6 +32,11 @@ format: html
     <br> <i class="fa-solid fa-location-dot" aria-hidden="true"></i> **Lokasi:** Lab Komputer D.311 
     <br> <i class="fa-solid fa-book" aria-hidden="true"></i> **Materi:** [Buka Modul 2](./modul2.ipynb)
 
+-   **Modul 3: Metode Multistep**
+    <br> <i class="fa-solid fa-calendar-days" aria-hidden="true"></i> **Tanggal:** 12 November 2026
+    <br> <i class="fa-solid fa-location-dot" aria-hidden="true"></i> **Lokasi:** Lab Komputer D.311 
+    <br> <i class="fa-solid fa-book" aria-hidden="true"></i> **Materi:** [Buka Modul 3](./modul3.qmd)
+
 ## Latihan
 
 -   **Latihan 1: Metode Euler**
@@ -43,4 +48,9 @@ format: html
     <br> <i class="fa-solid fa-calendar-days" aria-hidden="true"></i> **Tanggal:** 1 Oktober 2026
     <br> <i class="fa-solid fa-location-dot" aria-hidden="true"></i> **Lokasi:** Lab Komputer D.311 
     <br> <i class="fa-solid fa-book" aria-hidden="true"></i> **Materi:** [Buka Latihan 2](./latihan2.ipynb)
+
+-   **Latihan 3: Metode Multistep**
+    <br> <i class="fa-solid fa-calendar-days" aria-hidden="true"></i> **Tanggal:** 12 November 2026
+    <br> <i class="fa-solid fa-location-dot" aria-hidden="true"></i> **Lokasi:** Lab Komputer D.311 
+    <br> <i class="fa-solid fa-book" aria-hidden="true"></i> **Materi:** [Buka Latihan 3](./latihan3.ipynb)
 :::

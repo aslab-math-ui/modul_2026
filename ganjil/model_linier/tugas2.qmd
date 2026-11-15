@@ -1,0 +1,57 @@
+---
+title: "Tugas 2 Praktikum Model Linier"
+format: html
+editor: visual
+toc: true
+---
+
+# Lembar Tugas Praktikum: Pemodelan dan Validasi Regresi Berganda
+
+**Mata Kuliah Praktikum: Model Linier**
+
+**Topik: Pengembangan Model dan Model Validation**
+
+**Dataset: `mtcars` (Dataset bawaan R)**
+
+**Tujuan Pembelajaran:**
+
+- Mampu mengeksplorasi hubungan antara variabel respon dan prediktor.
+- Mampu membangun serta membandingkan model regresi berganda.
+- Mampu mengevaluasi kemampuan prediksi model menggunakan data uji dan cross-validation.
+
+## Instruksi Kerja
+
+Gunakan `R Script` atau `R Markdown` untuk mengerjakan soal. Tuliskan syntax R yang digunakan beserta interpretasi/jawaban teks untuk setiap nomor.
+
+Gunakan `mpg` sebagai variabel respon (Y), serta `wt`, `hp`, dan `am` sebagai prediktor (X). Ubah `am` menjadi faktor dengan label `Automatic` dan `Manual`.
+
+## Soal Praktikum
+
+**1. Eksplorasi Data dan Diagnostik Awal (Poin: 20)**
+
+Panggil dataset `mtcars`, kemudian tampilkan 6 baris pertama dan ringkasan statistik deskriptifnya. Buat scatter plot untuk melihat hubungan `wt` dan `hp` terhadap `mpg`. Selanjutnya, bentuk model awal `mpg ~ wt + hp + am` dan tampilkan residual plot serta scale-location plot.
+
+**Pertanyaan:** Berdasarkan grafik yang dihasilkan, apakah hubungan prediktor dengan `mpg` cenderung linear? Apakah terdapat indikasi pola pada residual atau variansi residual yang tidak konstan?
+
+**2. Pembentukan dan Perbandingan Model (Poin: 25)**
+
+Bentuk dua model regresi menggunakan data `mtcars`:
+
+- Model 1 (*first-order*): `mpg ~ wt + hp + am`
+- Model 2 (interaksi): `mpg ~ wt * am + hp`
+
+Tampilkan ringkasan kedua model. Bandingkan kedua model menggunakan `anova()` dan nilai AIC.
+
+**Pertanyaan:** Apakah penambahan interaksi `wt:am` memberikan peningkatan model yang signifikan pada taraf 5%? Model mana yang lebih baik berdasarkan hasil perbandingan tersebut?
+
+**3. Validasi pada Data Uji (Poin: 30)**
+
+Bagi data menjadi 80% data latih dan 20% data uji dengan `set.seed(2026)`. Bangun Model 1 dan Model 2 menggunakan data latih. Hitung nilai $R^2_{prediction}$, $MSE_{prediction}$, dan RMSE pada data uji. Buat juga scatter plot nilai `mpg` aktual dan prediksi untuk kedua model.
+
+**Pertanyaan:** Model mana yang memiliki kemampuan prediksi lebih baik? Jelaskan berdasarkan metrik evaluasi yang diperoleh.
+
+**4. K-Fold Cross-Validation dan Pemilihan Model (Poin: 25)**
+
+Lakukan 5-fold cross-validation pada seluruh dataset untuk Model 1 dan Model 2 menggunakan package `caret`. Bandingkan nilai RMSE dan $R^2$ hasil cross-validation.
+
+**Pertanyaan:** Model mana yang sebaiknya dipilih sebagai model akhir? Jelaskan dengan mempertimbangkan hasil cross-validation dan prinsip *parsimony* (memilih model yang lebih sederhana jika performanya relatif serupa).

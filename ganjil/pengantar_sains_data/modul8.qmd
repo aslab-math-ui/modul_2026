@@ -1,0 +1,458 @@
+---
+title: "(Pertemuan 08) Pengujian Hipotesis Menggunakan R"
+subtitle: "Hypothesis Testing in R"
+description: "Offline di Departemen Matematika"
+date: 11/16/2026
+page-navigation: true
+format: html
+---
+
+<a href="psd2026ganjil.qmd" class="btn btn-outline-primary mb-4">
+<i class="fa-solid fa-arrow-left"></i> Kembali ke Arsip Praktikum PSD
+</a>
+
+## Pengujian Hipotesis
+
+Selain taksiran titik dan taksiran interval, terdapat cara lain untuk melakukan inferensia, yaitu melakukan pengujian hipotesis. Pengujian hipotesis biasanya lebih disukai dan lebih sering digunakan dibandingkan dengan taksiran interval, karena kesimpulannya lebih jelas dan interpretasinya sederhana, dan aplikasinya jauh lebih banyak dibandingkan dengan interval kepercayaan. Meskipun demikian, teori statistika dibalik pengujian hipotesis juga lebih sulit dibandingkan dengan teori pada taksiran titik dan interval.
+
+Pada mata kuliah Pengantar Sains Data, kita hanya akan membahas uji-uji hipotesis yang paling sederhana, yaitu uji-z dan uji-t. Secara umum, langkah-langkah yang perlu dilakukan dalam melakukan pengujian hipotesis adalah:
+
+1.  Medefinisikan variabel acak dan menentukan tujuan uji hipotesis,
+2.  Menentukan hipotesis null ($H_0$) dan hipotesis alternatif ($H_1$),
+3.  Menentukan taraf signifikansi $\alpha$,
+4.  Menghitung statistik uji,
+5.  Menentukan aturan penolakan,
+6.  Mengambil kesimpulan.
+
+Sebagai contoh pertama, misalkan pada data `mtcars` kita ingin menguji apakah variabel `disp` memiliki mean $\mu = 250$. Untuk menguji hipotesis mean seperti ini, biasanya kita akan menggunakan uji-z jika ukuran sampel lebih dari $30$ atau variansi populasi diketahui, dan menggunakan uji-t jika ukuran sampel berukuran 30 ke bawah dan variansi populasi tidak diketahui.
+
+Statistik uji untuk uji-z yaitu
+
+$$
+Z = \frac{\bar{x}-\mu_0}{\sigma/\sqrt{n}}
+$$
+
+Dalam kasus variansi populasi tidak diketahui tetapi ukuran sampel masih cukup besar, $\sigma$ bisa diganti dengan $s$.
+
+Statistik uji untuk uji-t yaitu
+
+$$
+T = \frac{\bar{x}-\mu_0}{s/\sqrt{n}}
+$$
+
+Berikut adalah pengujian hipotesis dua ekor:
+
+```{r}
+# Definisikan variabel acak D yang menyatakan displacement mobil.
+# Akan dilakukan uji hipotesis dua ekor.
+# H0 : mu = 250
+# H1 : mu /= 250
+mu_0 <- 250
+# Akan digunakan taraf signifikansi alpha = 0.05.
+alpha <- 0.05
+# Perhitungan statistik ujinya yaitu
+disp_mean <- mean(mtcars$disp)
+disp_sd <- sd(mtcars$disp)
+disp_count <- nrow(mtcars)
+Z <- (disp_mean - mu_0) / (disp_sd / sqrt(disp_count))
+# Akan ditentukan aturan penolakannya
+Z_lower <- qnorm(alpha/2)
+Z_upper <- qnorm(1-alpha/2)
+# H0 ditolak jika Z < Z_lower atau Z > Z_upper.
+print(ifelse(Z < Z_lower | Z > Z_upper,
+             "H0 ditolak. Jadi, mean dari displacement mobil tidak sama dengan 250.",
+             "H0 diterima. Jadi, mean dari displacement mobil sama dengan 250."))
+# Aturan penolakan bisa juga dengan p-value
+p_value <- 2 * (1 - pnorm(abs(Z)))
+# H0 ditolak jika p-value < alpha.
+print(ifelse(p_value < alpha,
+             "H0 ditolak. Jadi, mean dari displacement mobil tidak sama dengan 250.",
+             "H0 diterima. Jadi, mean dari displacement mobil sama dengan 250."))
+cat(sprintf("Statistik uji Z = %.4f\nDaerah penolakannya yaitu Z < %.4f atau Z > %.4f\nP-value = %.6f", Z, Z_lower, Z_upper, p_value))
+```
+
+Berikut adalah pengujian hipotesis ekor kiri:
+
+```{r}
+# Definisikan variabel acak D yang menyatakan displacement mobil.
+# Akan dilakukan uji hipotesis ekor kiri.
+# H0 : mu >= 250
+# H1 : mu < 250
+mu_0 <- 250
+# Akan digunakan taraf signifikansi alpha = 0.05.
+alpha <- 0.05
+# Perhitungan statistik ujinya yaitu
+disp_mean <- mean(mtcars$disp)
+disp_sd <- sd(mtcars$disp)
+disp_count <- nrow(mtcars)
+Z <- (disp_mean - mu_0) / (disp_sd / sqrt(disp_count))
+# Akan ditentukan aturan penolakannya
+Z_lower <- qnorm(alpha)
+# H0 ditolak jika Z < Z_lower.
+print(ifelse(Z < Z_lower,
+             "H0 ditolak. Jadi, mean dari displacement mobil lebih kecil dari 250.",
+             "H0 diterima. Jadi, mean dari displacement mobil lebih dari atau sama dengan 250."))
+# Aturan penolakan bisa juga dengan p-value
+p_value <- pnorm(Z)
+# H0 ditolak jika p-value < alpha.
+print(ifelse(p_value < alpha,
+             "H0 ditolak. Jadi, mean dari displacement mobil lebih kecil dari 250.",
+             "H0 diterima. Jadi, mean dari displacement mobil lebih dari atau sama dengan 250."))
+cat(sprintf("Statistik uji Z = %.4f\nDaerah penolakannya yaitu Z < %.4f\nP-value = %.6f", Z, Z_lower, p_value))
+```
+
+Berikut adalah pengujian hipotesis ekor kanan:
+
+```{r}
+# Definisikan variabel acak D yang menyatakan displacement mobil.
+# Akan dilakukan uji hipotesis ekor kanan.
+# H0 : mu <= 250
+# H1 : mu > 250
+mu_0 <- 250
+# Akan digunakan taraf signifikansi alpha = 0.05.
+alpha <- 0.05
+# Perhitungan statistik ujinya yaitu
+disp_mean <- mean(mtcars$disp)
+disp_sd <- sd(mtcars$disp)
+disp_count <- nrow(mtcars)
+Z <- (disp_mean - mu_0) / (disp_sd / sqrt(disp_count))
+# Akan ditentukan aturan penolakannya
+Z_upper <- qnorm(1 - alpha)
+# H0 ditolak jika Z > Z_upper.
+print(ifelse(Z > Z_upper,
+             "H0 ditolak. Jadi, mean dari displacement mobil lebih besar dari 250.",
+             "H0 diterima. Jadi, mean dari displacement mobil lebih kecil dari atau sama dengan 250."))
+# Aturan penolakan bisa juga dengan p-value
+p_value <- 1 - pnorm(Z)
+# H0 ditolak jika p-value < alpha.
+print(ifelse(p_value < alpha,
+             "H0 ditolak. Jadi, mean dari displacement mobil lebih besar dari 250.",
+             "H0 diterima. Jadi, mean dari displacement mobil lebih besar dari atau sama dengan 250."))
+cat(sprintf("Statistik uji Z = %.4f\nDaerah penolakannya yaitu Z > %.4f\nP-value = %.6f", Z, Z_upper, p_value))
+```
+
+Pada contoh ini, uji-z dilakukan karena ukuran sampelnya lebih dari 30. Meskipun demikian, sebagai demonstrasi, akan dilakukan uji-t pada data yang sama. Kode untuk uji-t lebih sederhana karena ada fungsi bawaan untuk uji-t pada R, yaitu `t.test`.
+
+Berikut adalah pengujian hipotesis dua ekor:
+
+```{r}
+# Definisikan variabel acak D yang menyatakan displacement mobil.
+# Akan dilakukan uji hipotesis dua ekor.
+# H0 : mu = 250
+# H1 : mu /= 250
+mu_0 <- 250
+# Akan digunakan taraf signifikansi alpha = 0.05.
+alpha <- 0.05
+# Perhitungan statistik ujinya yaitu
+result <- t.test(mtcars$disp, mu = mu_0, alternative = "two.sided")
+T_ <- as.numeric(result$statistic)
+# Akan ditentukan aturan penolakannya
+df <- result$parameter
+T_lower <- qt(alpha/2, df = df)
+T_upper <- qt(1-alpha/2, df = df)
+# H0 ditolak jika T_ < T_lower atau T_ > T_upper.
+print(ifelse(T_ < T_lower | T_ > T_upper,
+             "H0 ditolak. Jadi, mean dari displacement mobil tidak sama dengan 250.",
+             "H0 diterima. Jadi, mean dari displacement mobil sama dengan 250."))
+# Aturan penolakan juga bisa dengan p-value
+p_value <- result$p.value
+# H0 ditolak jika p-value < alpha.
+print(ifelse(p_value < alpha,
+             "H0 ditolak. Jadi, mean dari displacement mobil tidak sama dengan 250.",
+             "H0 diterima. Jadi, mean dari displacement mobil sama dengan 250."))
+cat(sprintf("Statistik uji T = %.4f\nDaerah penolakannya yaitu T < %.4f atau T > %.4f\nP-value = %.6f", T_, T_lower, T_upper, p_value))
+```
+
+Berikut adalah pengujian hipotesis ekor kiri:
+
+```{r}
+# Definisikan variabel acak D yang menyatakan displacement mobil.
+# Akan dilakukan uji hipotesis ekor kiri.
+# H0 : mu >= 250
+# H1 : mu < 250
+mu_0 <- 250
+# Akan digunakan taraf signifikansi alpha = 0.05.
+alpha <- 0.05
+# Perhitungan statistik ujinya yaitu
+result <- t.test(mtcars$disp, mu = mu_0, alternative = "less")
+T_ <- as.numeric(result$statistic)
+# Akan ditentukan aturan penolakannya
+df <- result$parameter
+T_lower <- qt(alpha, df = df)
+# H0 ditolak jika T_ < T_lower.
+print(ifelse(T_ < T_lower,
+             "H0 ditolak. Jadi, mean dari displacement mobil lebih kecil dari 250.",
+             "H0 diterima. Jadi, mean dari displacement mobil lebih dari atau sama dengan 250."))
+# Aturan penolakan juga bisa dengan p-value
+p_value <- result$p.value
+# H0 ditolak jika p-value < alpha.
+print(ifelse(p_value < alpha,
+             "H0 ditolak. Jadi, mean dari displacement mobil lebih kecil dari 250.",
+             "H0 diterima. Jadi, mean dari displacement mobil lebih dari atau sama dengan 250."))
+cat(sprintf("Statistik uji T = %.4f\nDaerah penolakannya yaitu T < %.4f\nP-value = %.6f", T_, T_lower, p_value))
+```
+
+Berikut adalah pengujian hipotesis ekor kanan:
+
+```{r}
+# Definisikan variabel acak D yang menyatakan displacement mobil.
+# Akan dilakukan uji hipotesis ekor kanan.
+# H0 : mu <= 250
+# H1 : mu > 250
+mu_0 <- 250
+# Akan digunakan taraf signifikansi alpha = 0.05.
+alpha <- 0.05
+# Perhitungan statistik ujinya yaitu
+result <- t.test(mtcars$disp, mu = mu_0, alternative = "greater")
+T_ <- as.numeric(result$statistic)
+# Akan ditentukan aturan penolakannya
+df <- result$parameter
+T_upper <- qt(1 - alpha, df = df)
+# H0 ditolak jika T_ > T_upper.
+print(ifelse(T_ > T_upper,
+             "H0 ditolak. Jadi, mean dari displacement mobil lebih dari 250.",
+             "H0 diterima. Jadi, mean dari displacement mobil lebih kecil dari atau sama dengan 250."))
+# Aturan penolakan juga bisa dengan p-value
+p_value <- result$p.value
+# H0 ditolak jika p-value < alpha.
+print(ifelse(p_value < alpha,
+             "H0 ditolak. Jadi, mean dari displacement mobil lebih dari 250.",
+             "H0 diterima. Jadi, mean dari displacement mobil lebih kecil dari atau sama dengan 250."))
+cat(sprintf("Statistik uji T = %.4f\nDaerah penolakannya yaitu T > %.4f\nP-value = %.6f", T_, T_upper, p_value))
+```
+
+Untuk uji-uji hipotesis selanjutnya, hanya pengujian dua hipotesis dua ekor yang akan ditampilkan, karena kodenya tidak berbeda jauh antara uji dua ekor, ekor kiri, dan ekor kanan.
+
+Selain untuk menguji mean 1 populasi, uji-z dan uji-t juga dapat dilakukan untuk menguji beda mean antara 2 populasi. Sama seperti pada interval kepercayaan, untuk populasi independen, terdapat 3 kasus yaitu saat variansi kedua populasi diketahui, saat variansi kedua populasi tidak diketahui tetapi sama, dan saat variansi kedua populasi tidak diketahui dan tidak sama.
+
+Sebagai contoh, misalkan kita ingin menguji hipotesis bahwa mean displacement pada mobil matic tidak sama dengan mean displacement pada mobil manual.
+
+Untuk kasus variansi kedua populasi diketahui, statistik ujinya adalah
+
+$$
+Z = \frac{(\bar{x}_1 - \bar{x}_2) - (\mu_1 - \mu_2)}{\sqrt{\frac{\sigma_1^2}{n_1} + \frac{\sigma_2^2}{n_2}}}
+$$
+
+Untuk kasus pertama, misalkan kita mengetahui standar deviasi displacement pada mobil matic yaitu $\sigma_1 = 100$ dan standar deviasi displacement pada mobil manual yaitu $\sigma_2 = 90$. Menggunakan R, pengujian hipotesisnya yaitu sebagai berikut.
+
+```{r}
+# Definisikan variabel acak D_1 yang menyatakan displacement mobil matic dan variabel acak D_2 yang menyatakan displacement mobil manual.
+# Akan dilakukan uji hipotesis dua ekor.
+# H0 : mu_1 - mu_2 = 0
+# H1 : mu_1 - mu_2 /= 0
+diff_0 <- 0
+# Akan digunakan taraf signifikansi alpha = 0.05.
+alpha <- 0.05
+# Perhitungan statistik ujinya yaitu
+matic_disp_mean_1 <- mean(mtcars$disp[mtcars$am == 0])
+manual_disp_mean_1 <- mean(mtcars$disp[mtcars$am == 1])
+diff_disp_1 <- matic_disp_mean_1 - manual_disp_mean_1
+matic_disp_var_1 <- 100^2
+manual_disp_var_1 <- 90^2
+matic_count_1 <- sum(mtcars$am == 0)
+manual_count_1 <- sum(mtcars$am == 1)
+Z <- (diff_disp_1 - diff_0) / sqrt(matic_disp_var_1/matic_count_1 + manual_disp_var_1/manual_count_1)
+# Akan ditentukan aturan penolakannya
+Z_lower <- qnorm(alpha/2)
+Z_upper <- qnorm(1 - alpha/2)
+# H0 ditolak jika Z < Z_lower atau Z > Z_upper
+print(ifelse(Z < Z_lower | Z > Z_upper,
+             "H0 ditolak. Jadi, mean displacement antara mobil matic dengan mobil manual berbeda.",
+             "H0 diterima. Jadi, mean displacement antara mobil matic dengan mobil manual sama."))
+# Aturan penolakan juga bisa menggunakan p-value
+p_value_1 <- 2 * (1 - pnorm(abs(Z)))
+# H0 ditolak jika p-value < alpha
+print(ifelse(p_value_1 < alpha,
+             "H0 ditolak. Jadi, mean displacement antara mobil matic dengan mobil manual berbeda.",
+             "H0 diterima. Jadi, mean displacement antara mobil matic dengan mobil manual sama."))
+cat(sprintf("Statistik uji Z = %.4f\nDaerah penolakannya yaitu Z < %.4f atau Z > %.4f\nP-value = %.6f", Z, Z_lower, Z_upper, p_value_1))
+```
+
+Untuk kasus variansi kedua populasi tidak diketahui, tetapi sama, statistik ujinya adalah
+
+$$
+T = \frac{(\bar{x}_1 - \bar{x}_2) - (\mu_1 - \mu_2)}{s_p\sqrt{\frac{1}{n_1} + \frac{1}{n_2}}}
+$$
+
+dengan variansi pooled $s_p^2$ nya adalah
+
+$$
+s_p^2 = \frac{(n_1 - 1)s_1^2 + (n_2 - 1)s_2^2}{n_1 + n_2 - 2}
+$$
+
+Kita akan menggunakan kasus displacement mobil matic dan mobil manual pada data `mtcars` lagi sebagai contoh, kali ini dengan variansi yang tidak diketahui tapi dianggap sama.
+
+```{r}
+# Definisikan variabel acak D_1 yang menyatakan displacement mobil matic dan variabel acak D_2 yang menyatakan displacement mobil manual.
+# Akan dilakukan uji hipotesis dua ekor.
+# H0 : mu_1 - mu_2 = 0
+# H1 : mu_1 - mu_2 /= 0
+diff_0 <- 0
+# Akan digunakan taraf signifikansi alpha = 0.05.
+alpha <- 0.05
+# Perhitungan statistik ujinya yaitu
+result_1 <- t.test(mtcars$disp[mtcars$am == 0], mtcars$disp[mtcars$am == 1], alternative = "two.sided", mu = mu_0, var.equal = TRUE)
+T_1 <- as.numeric(result_1$statistic)
+# Akan ditentukan aturan penolakannya
+df_1 <- result_1$parameter
+T_lower <- qt(alpha/2, df = df_1)
+T_upper <- qt(1 - alpha/2, df = df_1)
+# H0 ditolak jika T_1 < T_lower atau T_1 > T_upper
+print(ifelse(T_1 < T_lower | T_1 > T_upper,
+             "H0 ditolak. Jadi, mean displacement antara mobil matic dengan mobil manual berbeda.",
+             "H0 diterima. Jadi, mean displacement antara mobil matic dengan mobil manual sama."))
+# Aturan penolakan juga bisa menggunakan p-value
+p_value_2 <- result_1$p.value
+# H0 ditolak jika p-value < alpha
+print(ifelse(p_value_2 < alpha,
+             "H0 ditolak. Jadi, mean displacement antara mobil matic dengan mobil manual berbeda.",
+             "H0 diterima. Jadi, mean displacement antara mobil matic dengan mobil manual sama."))
+cat(sprintf("Statistik uji T = %.4f\nDaerah penolakannya yaitu T < %.4f atau T > %.4f\nP-value = %.6f", T_1, T_lower, T_upper, p_value_2))
+```
+
+Untuk kasus variansi kedua populasi tidak diketahui dan belum tentu sama, statistik ujinya adalah
+
+$$
+T = \frac{(\bar{x}_1 - \bar{x}_2) - (\mu_1 - \mu_2)}{\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}}
+$$
+
+Statistik uji ini akan berdistribusi t dengan derajat bebas yaitu
+
+$$
+v = \frac{(s_1^2/n_1 + s_2^2/n_2)^2}{\frac{(s_1^2/n_1)^2}{n_1-1} + \frac{(s_2^2/n_2)^2}{n_2-2}}
+$$
+
+Sekali lagi, kita akan menggunakan kasus displacement mobil matic dan mobil manual pada data `mtcars` sebagai contoh, dan kali ini dengan variansi yang tidak diketahui dan tidak dianggap sama.
+
+```{r}
+# Definisikan variabel acak D_1 yang menyatakan displacement mobil matic dan variabel acak D_2 yang menyatakan displacement mobil manual.
+# Akan dilakukan uji hipotesis dua ekor.
+# H0 : mu_1 - mu_2 = 0
+# H1 : mu_1 - mu_2 /= 0
+diff_0 <- 0
+# Akan digunakan taraf signifikansi alpha = 0.05.
+alpha <- 0.05
+# Perhitungan statistik ujinya yaitu
+result_2 <- t.test(mtcars$disp[mtcars$am == 0], mtcars$disp[mtcars$am == 1], alternative = "two.sided", mu = mu_0, var.equal = FALSE)
+T_2 <- as.numeric(result_2$statistic)
+# Akan ditentukan aturan penolakannya
+df_2 <- result_2$parameter
+T_lower <- qt(alpha/2, df = df_2)
+T_upper <- qt(1 - alpha/2, df = df_2)
+# H0 ditolak jika T_2 < T_lower atau T_2 > T_upper
+print(ifelse(T_2 < T_lower | T_2 > T_upper,
+             "H0 ditolak. Jadi, mean displacement antara mobil matic dengan mobil manual berbeda.",
+             "H0 diterima. Jadi, mean displacement antara mobil matic dengan mobil manual sama."))
+# Aturan penolakan juga bisa menggunakan p-value
+p_value_3 <- result_2$p.value
+# H0 ditolak jika p-value < alpha
+print(ifelse(p_value_3 < alpha,
+             "H0 ditolak. Jadi, mean displacement antara mobil matic dengan mobil manual berbeda.",
+             "H0 diterima. Jadi, mean displacement antara mobil matic dengan mobil manual sama."))
+cat(sprintf("Statistik uji T = %.4f\nDaerah penolakannya yaitu T < %.4f atau T > %.4f\nP-value = %.6f", T_2, T_lower, T_upper, p_value_3))
+```
+
+## Pengujian Hipotesis untuk Sampel Berpasangan
+
+Uji sampel berpasangan (*paired sample t-test*) digunakan ketika dua kelompok data saling bergantung atau berasal dari subjek yang sama yang diukur dua kali (misalnya kondisi **sebelum** dan **sesudah** diberikan suatu perlakuan).
+
+Misalkan $d_i = x_{i,\text{sesudah}} - x_{i,\text{sebelum}}$ menyatakan selisih nilai pengamatan ke-$i$, dengan rata-rata selisih $\bar{d}$ dan simpangan baku selisih $s_d$. Statistik uji-$t$ berpasangan dirumuskan sebagai:
+
+$$t_{\text{hitung}} = \frac{\bar{d} - \mu_{d,0}}{s_d / \sqrt{n}} \sim t_{n-1}$$
+
+### Contoh Penerapan di R
+
+Misalkan dilakukan pengukuran waktu tempuh lari (dalam detik) dari $10$ atlet sebelum dan sesudah mengikuti program pelatihan intensif selama $4$ minggu. Kita ingin menguji apakah program pelatihan tersebut secara signifikan menurunkan waktu tempuh lari atlet ($\alpha = 0.05$):
+
+- $H_0: \mu_d = 0$ (tidak ada perbedaan waktu tempuh sebelum dan sesudah pelatihan)
+- $H_1: \mu_d < 0$ (waktu tempuh sesudah pelatihan lebih cepat dibandingkan sebelum pelatihan)
+
+```{r}
+# Data waktu tempuh (detik)
+sebelum <- c(15.2, 16.0, 14.8, 15.5, 16.3, 15.9, 14.9, 15.7, 16.1, 15.4)
+sesudah <- c(14.8, 15.5, 14.6, 15.0, 15.8, 15.6, 14.5, 15.2, 15.9, 15.0)
+
+# Pengujian hipotesis sampel berpasangan
+hasil_paired <- t.test(
+  sesudah,
+  sebelum,
+  paired = TRUE,
+  alternative = "less",
+  conf.level = 0.95
+)
+
+print(hasil_paired)
+```
+
+### Interpretasi Hasil
+
+Dari keluaran `t.test(..., paired = TRUE)` di atas:
+
+1. Nilai statistik uji $t$ sangat negatif dengan nilai $\text{p-value} < 0.05$.
+2. Dengan tingkat signifikansi $\alpha = 0.05$, keputusan yang diambil adalah **tolak $H_0$**.
+3. Kesimpulannya, terdapat cukup bukti statistik bahwa program pelatihan intensif secara signifikan menurunkan rata-rata waktu tempuh lari atlet.
+```
+
+## Perhitungan Probabilitas Terjadinya Galat Menggunakan R
+
+Dalam pengambilan keputusan pengujian hipotesis, terdapat dua jenis kesalahan (galat) yang mungkin terjadi:
+
+| Keputusan Uji | $H_0$ Benar | $H_0$ Salah |
+| :--- | :--- | :--- |
+| **Gagal Tolak $H_0$** | Keputusan Tepat ($1 - \alpha$) | **Galat Tipe II ($\beta$)** |
+| **Tolak $H_0$** | **Galat Tipe I ($\alpha$)** | Keputusan Tepat / Kuasa Uji ($1 - \beta$) |
+
+- **Galat Tipe I ($\alpha$):** Peluang menolak $H_0$ padahal $H_0$ benar. Nilai $\alpha$ ditetapkan langsung oleh peneliti sebagai tingkat signifikansi.
+- **Galat Tipe II ($\beta$):** Peluang gagal menolak $H_0$ padahal $H_0$ salah (dan nilai parameter sebenarnya adalah $\mu_1$ tertentu). Nilai $1 - \beta$ disebut sebagai **kuasa uji (*power of the test*)**.
+
+### Contoh Perhitungan Galat Tipe I dan Tipe II di R
+
+Misalkan suatu populasi berdistribusi normal dengan $\sigma = 6$ dan ukuran sampel $n = 32$. Kita menguji:
+- $H_0: \mu = 20$
+- $H_1: \mu > 20$
+
+dengan tingkat signifikansi $\alpha = 0.05$. Jika ternyata rata-rata populasi sebenarnya adalah $\mu_1 = 22.5$, kita dapat menghitung titik kritis, probabilitas Galat Tipe I ($\alpha$), probabilitas Galat Tipe II ($\beta$), serta kuasa uji ($1 - \beta$) menggunakan R sebagai berikut:
+
+```{r}
+mu_0 <- 20
+mu_1 <- 22.5
+sigma <- 6
+n <- 32
+alpha <- 0.05
+
+# Standard error
+se <- sigma / sqrt(n)
+
+# Titik kritis rata-rata sampel (x_bar kritis) untuk uji ekor kanan
+x_kritis <- qnorm(1 - alpha, mean = mu_0, sd = se)
+
+# Probabilitas Galat Tipe I (alpha)
+galat_tipe_1 <- pnorm(x_kritis, mean = mu_0, sd = se, lower.tail = FALSE)
+
+# Probabilitas Galat Tipe II (beta): peluang x_bar <= x_kritis saat mu = mu_1
+galat_tipe_2 <- pnorm(x_kritis, mean = mu_1, sd = se, lower.tail = TRUE)
+
+# Kuasa uji (Power = 1 - beta)
+kuasa_uji <- 1 - galat_tipe_2
+
+cat(sprintf("Titik kritis x_bar : %.4f\n", x_kritis))
+cat(sprintf("Galat Tipe I (alpha): %.4f\n", galat_tipe_1))
+cat(sprintf("Galat Tipe II (beta): %.4f\n", galat_tipe_2))
+cat(sprintf("Kuasa Uji (1 - beta): %.4f\n", kuasa_uji))
+```
+
+### Menghitung Kuasa Uji dengan `power.t.test()`
+
+Jika simpangan baku populasi tidak diketahui (menggunakan distribusi-$t$), R menyediakan fungsi `power.t.test()` untuk menghitung salah satu dari ukuran sampel ($n$), selisih rata-rata ($\delta$), tingkat signifikansi ($\alpha$), atau kuasa uji (*power*):
+
+```{r}
+power.t.test(
+  n = 32,
+  delta = 2.5,       # selisih |mu_1 - mu_0|
+  sd = 6,
+  sig.level = 0.05,
+  type = "one.sample",
+  alternative = "one.sided"
+)
+```
+

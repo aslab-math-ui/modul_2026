@@ -391,7 +391,6 @@ Dari keluaran `t.test(..., paired = TRUE)` di atas:
 1. Nilai statistik uji $t$ sangat negatif dengan nilai $\text{p-value} < 0.05$.
 2. Dengan tingkat signifikansi $\alpha = 0.05$, keputusan yang diambil adalah **tolak $H_0$**.
 3. Kesimpulannya, terdapat cukup bukti statistik bahwa program pelatihan intensif secara signifikan menurunkan rata-rata waktu tempuh lari atlet.
-```
 
 ## Perhitungan Probabilitas Terjadinya Galat Menggunakan R
 

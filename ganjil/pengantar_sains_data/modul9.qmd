@@ -52,7 +52,7 @@ Mari kita mulai perjalanan analisis ini dari konsep fundamental hingga komunikas
 
 ---
 
-## Pengujian Hipotesis
+## 1. Pengujian Hipotesis
 
 Pada modul sebelumnya, kita sudah belajar mengenai uji hipotesis. Untuk review singkat, berikut adalah alur pada uji hipotesis:
 
@@ -70,7 +70,7 @@ Pada modul sebelumnya, kita sudah belajar mengenai uji hipotesis. Untuk review s
 
 Pada modul ini, kita akan membahas uji-uji yang lebih *advanced*, seperti uji ANOVA maupun uji Chi Square untuk hipotesis null yang lebih kompleks dibandingkan dengan sebelumnya.
 
-### 3.4. ANOVA: Membandingkan Lebih dari Dua Kelompok
+### 1.1. ANOVA: Membandingkan Lebih dari Dua Kelompok
 
 Bagaimana jika kita ingin membandingkan **lebih dari dua kelompok**? Misalnya, membandingkan MPG untuk mobil dengan 4, 6, dan 8 silinder? Kita menggunakan **Analysis of Variance (ANOVA)** untuk hal ini, karena kita membandingkan 3 populasi yakni mobil dengan 4, 6, dan 8 silinder.
 
@@ -123,7 +123,7 @@ if (p_value < alpha) {
 }
 ```
 
-### 3.4.1 (Pengayaan) Post-hoc test
+### 1.1.1 (Pengayaan) Post-hoc test
 
 Jika ANOVA menolak H0, sebenarnya ada uji lebih lanjut yang bisa kalian lakukan untuk mengetahui kelompok mana dengan mean berbeda. Uji ini dinamakan **Post-hoc test**. Karena uji ini diluar materi perkuliahan PSD, kalian bisa cari melalui internet untuk detail lebih lanjutnya.
 
@@ -146,9 +146,9 @@ Secara sederhana, interpretasi dari uji ini adalah:
 
 - Jika **p adj** lebih kecil dari $\alpha$, maka kelompoknya berbeda secara signifikan
 
-### 3.5. Uji Chi-Squared
+### 1.2. Uji Chi-Squared
 
-#### 3.5.1. Uji Goodness of Fit
+#### 1.2.1. Uji Goodness of Fit
 
 Uji Chi-Squared digunakan untuk menguji apakah data mengikuti distribusi tertentu.
 
@@ -204,7 +204,7 @@ barplot(rbind(df_dadu$Observasi, df_dadu$Ekspektasi),
         ylab = "Frekuensi")
 ```
 
-#### 3.5.2. Uji Independensi
+#### 1.2.2. Uji Independensi
 
 Menguji apakah dua variabel kategorik saling independen.
 
@@ -240,9 +240,9 @@ print(chi_test$expected)
 
 ---
 
-## 4. Korelasi dan Regresi Linear
+## 2. Korelasi dan Regresi Linear
 
-### 4.1. Korelasi: Mengukur Keeratan Hubungan
+### 2.1. Korelasi: Mengukur Keeratan Hubungan
 
 **Korelasi Pearson** mengukur keeratan hubungan linear antara dua variabel numerik. Nilainya berkisar dari -1 hingga +1:
 - **r ≈ +1**: korelasi positif sempurna
@@ -270,7 +270,7 @@ ggplot(mtcars, aes(x = disp, y = wt)) +
   theme_minimal()
 ```
 
-### 4.2. Heatmap Korelasi
+### 2.2. Heatmap Korelasi
 
 Untuk melihat korelasi banyak variabel sekaligus, gunakan heatmap:
 
@@ -301,7 +301,7 @@ corrplot(cor_matrix,
 - MPG berkorelasi negatif kuat dengan weight, displacement, dan cyl
 - Weight dan displacement berkorelasi positif sangat kuat
 
-### 4.3. Regresi Linear Sederhana
+### 2.3. Regresi Linear Sederhana
 
 **Regresi linear** digunakan untuk memodelkan hubungan antara variabel dependen (Y) dan variabel independen (X):
 
@@ -346,7 +346,7 @@ legend("topleft",
        lwd = c(NA, 2))
 ```
 
-### 4.4. Evaluasi Model Regresi
+### 2.4. Evaluasi Model Regresi
 
 Beberapa metrik penting untuk mengevaluasi model:
 
@@ -390,7 +390,7 @@ par(mfrow = c(1, 1))
 
 4. **Residuals vs Leverage**: Identifikasi outlier berpengaruh
 
-### 4.5. Prediksi dengan Model Regresi
+### 2.5. Prediksi dengan Model Regresi
 
 ```{r filename='R'}
 # Buat data baru untuk prediksi
@@ -435,11 +435,11 @@ legend("topleft",
 
 ---
 
-## 5. Komunikasi Hasil: Quarto, Markdown, dan LaTeX
+## 3. Komunikasi Hasil: Quarto, Markdown, dan LaTeX
 
 Sebagai data analyst profesional, kemampuan mengomunikasikan hasil sama pentingnya dengan kemampuan analisis. **Quarto** adalah tools modern untuk membuat laporan analisis yang interaktif dan profesional.
 
-### 5.1. Membuat Dokumen Quarto
+### 3.1. Membuat Dokumen Quarto
 
 **Langkah 1**: Buat file Quarto baru di RStudio
 
@@ -477,7 +477,7 @@ Dataset yang digunakan adalah `mtcars` yang berisi...
 Analisis dilakukan menggunakan R dengan pendekatan...
 ```
 
-### 5.2. Pengantar Markdown
+### 3.2. Pengantar Markdown
 
 Markdown adalah bahasa markup sederhana untuk formatting teks:
 
@@ -520,7 +520,7 @@ untuk menulis kode
 ```
 ```
 
-### 5.3. Pengantar LaTeX untuk Rumus
+### 3.3. Pengantar LaTeX untuk Rumus
 
 LaTeX memungkinkan Anda menulis rumus matematis dengan rapi:
 
@@ -574,7 +574,7 @@ Y_i &= \beta_0 + \beta_1 X_i + \varepsilon_i \\
 $
 ```
 
-### 5.4. Menyisipkan Kode R dalam Quarto
+### 3.4. Menyisipkan Kode R dalam Quarto
 
 Quarto memungkinkan eksekusi kode R langsung dalam dokumen:
 
@@ -601,7 +601,7 @@ plot(mtcars$disp, mtcars$wt)
 ```
 ````
 
-### 5.5. Render ke Berbagai Format
+### 3.5. Render ke Berbagai Format
 
 **Render ke HTML**:
 ```yaml
@@ -644,7 +644,7 @@ library(quarto)
 quarto_render("laporan.qmd")
 ```
 
-### 5.6. Template Laporan Lengkap
+### 3.6. Template Laporan Lengkap
 
 Berikut template lengkap untuk laporan analisis:
 
